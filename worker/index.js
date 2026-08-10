@@ -28,6 +28,11 @@ export default {
       "Content-Type": "application/json; charset=utf-8",
     };
 
+    // Route static assets (index.html, admin.html, images, CSS, etc.)
+    if (env.ASSETS && !url.pathname.startsWith("/api/")) {
+      return await env.ASSETS.fetch(request);
+    }
+
     try {
       // Route 1: Image Upload to Cloudflare R2 (POST /api/upload)
       if (url.pathname === "/api/upload" && request.method === "POST") {

@@ -471,6 +471,7 @@
     <div class="admin-tabs">
       <button class="admin-tab-btn active" onclick="switchTab('posts-tab')">📝 블로그 글 관리</button>
       <button class="admin-tab-btn" onclick="switchTab('write-tab')">✏️ 새 글 작성하기</button>
+      <button class="admin-tab-btn" onclick="switchTab('chat-tab')">💬 실시간 1:1 고객 상담 센터</button>
       <button class="admin-tab-btn" onclick="switchTab('seo-tab')">🔍 네이버/구글 검색등록 (SEO)</button>
     </div>
 
@@ -555,6 +556,28 @@
             <button type="button" class="btn-gen-xml" onclick="cancelEdit()">취소</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- TAB 3: Live Chat & AI Chatbot Center -->
+    <div id="chat-tab" class="admin-tab-content">
+      <div class="admin-card">
+        <div class="admin-card-title">
+          <span>💬 실시간 1:1 고객 상담 & AI 챗봇 모니터링</span>
+          <a href="https://documind-backend.lymin80.workers.dev" target="_blank" class="btn-gen-xml" style="text-decoration:none;">전용 콘솔 크게 보기 ↗</a>
+        </div>
+        <p style="color: #9C9489; font-size: 0.85rem; margin-bottom: 1.5rem;">
+          메인 홈페이지(<code style="color:#C9A96E;">sam.lymin80.shop</code>)에서 고객이 챗봇으로 질문하거나 <strong>"상담사 연결"</strong>을 요청하면 실시간 대화가 이곳으로 수신됩니다.
+        </p>
+
+        <!-- DocuMind Live Chat Console Iframe Integration -->
+        <div style="width: 100%; height: 680px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(201,169,110,0.2); background: #141110;">
+          <iframe 
+            src="https://documind-backend.lymin80.workers.dev/chat-console?project_id=proj_1786338441335_1lv8f" 
+            style="width: 100%; height: 100%; border: none;"
+            title="주얼리 샘 실시간 상담 콘솔">
+          </iframe>
+        </div>
       </div>
     </div>
 

@@ -817,6 +817,24 @@
       checkUrlDeepLinkPost();
     });
     window.addEventListener('storage', fetchHomePagePosts);
+
+    function openChatWidget() {
+      if (window.DocuMindWidget && typeof window.DocuMindWidget.open === 'function') {
+        window.DocuMindWidget.open();
+      } else {
+        const trigger = document.querySelector('.documind-widget-trigger') || document.getElementById('documind-widget-root');
+        if (trigger) trigger.click();
+        else alert('💬 실시간 챗봇을 불러오는 중입니다. 잠시 후 오른쪽 아래 챗봇 아이콘을 클릭해 주세요!');
+      }
+    }
+  </script>
+
+  <!-- DocuMind Edge AI Chatbot & Real-Time Live Chat Widget Integration -->
+  <script 
+    src="https://documind-backend.lymin80.workers.dev/documind-widget.js?v=2" 
+    data-project-id="proj_1786338441335_1lv8f"
+    data-api-host="https://documind-backend.lymin80.workers.dev"
+    defer>
   </script>
 </body>
 </html>

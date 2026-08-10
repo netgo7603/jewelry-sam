@@ -819,13 +819,28 @@
     window.addEventListener('storage', fetchHomePagePosts);
 
     function openChatWidget() {
+      notifyAgentConnection('🧑‍💻 고객님이 실시간 1:1 상담원 연결을 요청하셨습니다.');
       if (window.DocuMindWidget && typeof window.DocuMindWidget.open === 'function') {
         window.DocuMindWidget.open();
       } else {
         const trigger = document.querySelector('.documind-widget-trigger') || document.getElementById('documind-widget-root');
         if (trigger) trigger.click();
-        else alert('💬 실시간 챗봇을 불러오는 중입니다. 잠시 후 오른쪽 아래 챗봇 아이콘을 클릭해 주세요!');
+        else alert('💬 실시간 챗봇을 불러오는 중입니다. 오른쪽 아래 챗봇 아이콘을 클릭해 주세요!');
       }
+    }
+
+    function notifyAgentConnection(userText) {
+      try {
+        fetch('https://documind-backend.lymin80.workers.dev/api/live-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            isAdmin: false,
+            userId: '방문고객_' + Math.floor(1000 + Math.random() * 9000),
+            text: userText || '🧑‍💻 상담사 연결 요청이 들어왔습니다.'
+          })
+        }).catch(() => {});
+      } catch(e) {}
     }
   </script>
 

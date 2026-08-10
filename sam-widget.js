@@ -1,9 +1,16 @@
 /**
  * Jewelry SAM Native 24h AI & 1:1 Real-Time Live Chat Widget
- * Fully integrated for sam.lymin80.shop (No external script dependencies)
+ * Fully integrated for sam.lymin80.shop
  */
 (function () {
-  if (window.JewelrySamWidgetLoaded) return;
+  // Purge lingering old DocuMind elements & global objects
+  const oldDocuMind = document.getElementById('documind-widget-root');
+  if (oldDocuMind) oldDocuMind.remove();
+  delete window.DocuMindWidgetLoaded;
+
+  const oldSamRoot = document.getElementById('sam-widget-root');
+  if (oldSamRoot) oldSamRoot.remove();
+
   window.JewelrySamWidgetLoaded = true;
 
   const API_HOST = window.location.origin.includes('lymin80.shop') 
@@ -25,13 +32,13 @@
       position: fixed;
       bottom: 24px;
       right: 24px;
-      width: 60px;
-      height: 60px;
+      width: 62px;
+      height: 62px;
       border-radius: 50%;
       background: linear-gradient(135deg, #C9A96E 0%, #A88B52 100%);
       color: #0C0A08;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 10px 25px rgba(201, 169, 110, 0.4), 0 4px 10px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 10px 25px rgba(201, 169, 110, 0.5), 0 4px 12px rgba(0, 0, 0, 0.6);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -40,10 +47,10 @@
       transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .fab-button:hover {
-      transform: scale(1.08) translateY(-2px);
-      box-shadow: 0 15px 30px rgba(201, 169, 110, 0.6);
+      transform: scale(1.08) translateY(-3px);
+      box-shadow: 0 15px 30px rgba(201, 169, 110, 0.7);
     }
-    .fab-icon { font-size: 26px; line-height: 1; }
+    .fab-icon { font-size: 28px; line-height: 1; }
     
     .chat-drawer {
       position: fixed;
@@ -54,9 +61,9 @@
       height: 600px;
       max-height: calc(100vh - 120px);
       background: #141110;
-      border: 1px solid rgba(201, 169, 110, 0.25);
+      border: 1px solid rgba(201, 169, 110, 0.3);
       border-radius: 20px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(201, 169, 110, 0.15);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(201, 169, 110, 0.2);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -83,7 +90,7 @@
     .header-info { display: flex; align-items: center; gap: 10px; }
     .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px #4ade80; }
     .header-title { color: #F5F0E8; font-weight: 600; font-size: 15px; }
-    .close-btn { background: none; border: none; color: #9C9489; cursor: pointer; font-size: 22px; padding: 0; }
+    .close-btn { background: none; border: none; color: #9C9489; cursor: pointer; font-size: 24px; padding: 0; }
     .close-btn:hover { color: #F5F0E8; }
     
     .chat-messages {
@@ -185,7 +192,8 @@
     <button class="fab-button" id="samFabBtn">
       <span class="fab-icon">💎</span>
     </button>
-      <div class="chat-drawer" id="samChatDrawer">
+    
+    <div class="chat-drawer" id="samChatDrawer">
       <div class="chat-header">
         <div class="header-info">
           <div class="status-dot"></div>
@@ -391,18 +399,6 @@
             isLiveMode = true; // Auto enable live mode when admin responds
             endBtn.style.display = 'block';
             agentBtn.style.display = 'none';
-            const div = document.createElement('div');
-            div.id = `admin-msg-${m.id}`;
-            div.className = 'msg msg-admin';
-            div.innerHTML = `👤 상담원:\n${m.text}`;
-            messagesBox.appendChild(div);
-            messagesBox.scrollTop = messagesBox.scrollHeight;
-          }
-        });
-      }
-    } catch(e) {}
-  }
-})();veMode = true; // Auto enable live mode when admin responds
             const div = document.createElement('div');
             div.id = `admin-msg-${m.id}`;
             div.className = 'msg msg-admin';

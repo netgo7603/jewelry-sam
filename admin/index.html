@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>주얼리 샘 | 블로그 & SEO 관리자 시스템</title>
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="style.css?v=2">
+
+  <!-- Quill WYSIWYG Rich Text Editor -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+  <style>
+    /* Admin Dashboard Custom Styles */
+    body {
+      background-color: #0c0a08;
+      color: #f5f0e8;
+      font-family: 'Noto Sans KR', sans-serif;
+      padding-bottom: 4rem;
+    }
+
+    /* Quill Editor Dark Luxury Styling */
+    .ql-toolbar.ql-snow {
+      background: #141110 !important;
+      border-color: rgba(201, 169, 110, 0.3) !important;
+      border-radius: 8px 8px 0 0;
+    }
+    .ql-container.ql-snow {
+      background: #0C0A08 !important;
+      border-color: rgba(201, 169, 110, 0.3) !important;
+      border-radius: 0 0 8px 8px;
+      color: #F5F0E8 !important;
+      font-size: 1rem !important;
+      min-height: 260px;
+    }
+    .ql-editor {
+      min-height: 260px;
+      line-height: 1.8;
+    }
+    .ql-snow .ql-stroke { stroke: #C9A96E !important; }
+    .ql-snow .ql-fill { fill: #C9A96E !important; }
+    .ql-snow .ql-picker { color: #C9A96E !important; }
+
+    .admin-header {
+      background: #141110;
+      border-bottom: 1px solid rgba(201, 169, 110, 0.2);
+      padding: 1.25rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .admin-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: #F5F0E8;
+    }
+
+    .admin-logo img {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+    }
+
+    .admin-badge {
+      padding: 0.25rem 0.75rem;
+      background: rgba(201, 169, 110, 0.15);
+      border: 1px solid rgba(201, 169, 110, 0.3);
+      border-radius: 100px;
+      font-size: 0.75rem;
+      color: #C9A96E;
+      font-weight: 600;
+    }
+
+    .admin-container {
+      max-width: 1200px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .admin-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid rgba(201, 169, 110, 0.2);
+      padding-bottom: 0.5rem;
+    }
+
+    .admin-tab-btn {
+      background: transparent;
+      border: none;
+      color: #9C9489;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 0.75rem 1.25rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .admin-tab-btn.active {
+      background: rgba(201, 169, 110, 0.15);
+      color: #C9A96E;
+      font-weight: 600;
+    }
+
+    .admin-tab-content {
+      display: none;
+    }
+
+    .admin-tab-content.active {
+      display: block;
+    }
+
+    .admin-card {
+      background: #1A1614;
+      border: 1px solid rgba(201, 169, 110, 0.15);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .admin-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: #F5F0E8;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #C9A96E;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 0.85rem 1.1rem;
+      background: #0C0A08;
+      border: 1px solid rgba(201, 169, 110, 0.2);
+      border-radius: 8px;
+      color: #F5F0E8;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.3s ease;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: #C9A96E;
+    }
+
+    .form-textarea {
+      min-height: 180px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    .preset-images {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .preset-img-btn {
+      background: #141110;
+      border: 1px solid rgba(201, 169, 110, 0.2);
+      color: #9C9489;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .preset-img-btn:hover {
+      background: rgba(201, 169, 110, 0.15);
+      color: #C9A96E;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #C9A96E, #A88B52);
+      color: #0C0A08;
+      border: none;
+      padding: 0.9rem 2rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+    }
+
+    .post-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .post-table th, .post-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(201, 169, 110, 0.1);
+    }
+
+    .post-table th {
+      color: #C9A96E;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .post-table td {
+      font-size: 0.9rem;
+      color: #9C9489;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.75rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-edit {
+      background: rgba(201, 169, 110, 0.2);
+      color: #C9A96E;
+    }
+
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .seo-box {
+      background: #141110;
+      border: 1px solid rgba(201, 169, 110, 0.2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .seo-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #C9A96E;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .seo-desc {
+      font-size: 0.88rem;
+      color: #9C9489;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .btn-gen-xml {
+      background: transparent;
+      border: 1px solid #C9A96E;
+      color: #C9A96E;
+      padding: 0.6rem 1.25rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-gen-xml:hover {
+      background: rgba(201, 169, 110, 0.2);
+    }
+
+    /* Admin Login Overlay */
+    .login-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #0C0A08;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 420px;
+      background: #1A1614;
+      border: 1px solid rgba(201, 169, 110, 0.25);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(201, 169, 110, 0.15);
+      text-align: center;
+    }
+
+    .login-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: #F5F0E8;
+      margin: 1rem 0 0.5rem;
+    }
+
+    .login-error {
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Login Overlay Gateway -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+      <img src="images/favicon.png" alt="주얼리 샘" style="width: 54px; height: 54px; border-radius: 50%;">
+      <h2 class="login-title">주얼리 샘 관리자 로그인</h2>
+      <p style="font-size: 0.85rem; color: #9C9489; margin-bottom: 2rem;">관리자 계정 정보를 입력하세요.</p>
+
+      <form onsubmit="handleAdminLogin(event)">
+        <div class="form-group" style="text-align: left;">
+          <label class="form-label" for="login-id">아이디</label>
+          <input type="text" id="login-id" class="form-input" placeholder="아이디 입력" required>
+        </div>
+        <div class="form-group" style="text-align: left;">
+          <label class="form-label" for="login-pw">비밀번호</label>
+          <input type="password" id="login-pw" class="form-input" placeholder="비밀번호 입력" required>
+        </div>
+        <div class="login-error" id="loginErrorMsg">아이디 또는 비밀번호가 올바르지 않습니다.</div>
+        <button type="submit" class="btn-submit" style="width: 100%; margin-top: 1.5rem;">로그인</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Header -->
+  <header class="admin-header">
+    <div class="container admin-nav">
+      <a href="index.html" class="admin-logo">
+        <img src="images/favicon.png" alt="주얼리 샘 로고">
+        주얼리 샘 관리자 센터
+      </a>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <span class="admin-badge">Blog & SEO System</span>
+        <a href="index.html" target="_blank" class="btn-gen-xml">홈페이지 바로가기 ↗</a>
+        <button class="btn-gen-xml" style="border-color: #ef4444; color: #ef4444;" onclick="handleAdminLogout()">🔒 로그아웃</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="admin-container">
+    <!-- Admin Nav Tabs -->
+    <div class="admin-tabs">
+      <button class="admin-tab-btn active" onclick="switchTab('posts-tab')">📝 블로그 글 관리</button>
+      <button class="admin-tab-btn" onclick="switchTab('write-tab')">✏️ 새 글 작성하기</button>
+      <button class="admin-tab-btn" onclick="switchTab('seo-tab')">🔍 네이버/구글 검색등록 (SEO)</button>
+    </div>
+
+    <!-- TAB 1: Posts List -->
+    <div id="posts-tab" class="admin-tab-content active">
+      <div class="admin-card">
+        <div class="admin-card-title">
+          <span>등록된 블로그 포스트 목록</span>
+          <button class="btn-submit" onclick="switchTab('write-tab')">+ 새 포스트 추가</button>
+        </div>
+        <p style="color: #9C9489; font-size: 0.85rem; margin-bottom: 1.5rem;">
+          이곳에 등록된 글은 메인 홈페이지의 [블로그] 섹션에 즉시 노출되며, 검색엔진(네이버, 구글)에 수집됩니다.
+        </p>
+
+        <table class="post-table">
+          <thead>
+            <tr>
+              <th>순번</th>
+              <th>포스트 번호 (ID)</th>
+              <th>제목</th>
+              <th>카테고리</th>
+              <th>작성일</th>
+              <th>관리</th>
+            </tr>
+          </thead>
+          <tbody id="admin-post-list">
+            <!-- Dynamic Posts render -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 2: Write/Edit Post -->
+    <div id="write-tab" class="admin-tab-content">
+      <div class="admin-card">
+        <div class="admin-card-title" id="form-title-text">새 블로그 포스트 작성</div>
+        <form id="post-form" onsubmit="handlePostSubmit(event)">
+          <input type="hidden" id="edit-post-id" value="">
+
+          <div class="form-group">
+            <label class="form-label" for="post-title">포스트 제목 *</label>
+            <input type="text" id="post-title" class="form-input" placeholder="예: [종로 골드바] 24K 순금 골드바 현명하게 선택하는 법" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="post-category">카테고리 *</label>
+            <select id="post-category" class="form-select">
+              <option value="골드바 투자">골드바 투자</option>
+              <option value="주얼리 팁">주얼리 팁</option>
+              <option value="커플링 가이드">커플링 가이드</option>
+              <option value="매장 소식">매장 소식</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="post-image">대표 이미지 (Cloudflare R2 자동 저장) *</label>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <input type="text" id="post-image" class="form-input" value="images/gold_bar.png" placeholder="R2 이미지 URL 또는 사진 파일 선택" required>
+              <label for="post-file-input" class="btn-gen-xml" style="white-space: nowrap; cursor: pointer; display: inline-flex; align-items: center; background: rgba(201,169,110,0.15);">☁️ Cloudflare R2에 사진 업로드</label>
+              <input type="file" id="post-file-input" accept="image/*" style="display: none;" onchange="uploadToCloudflareR2(event)">
+            </div>
+            <div id="image-preview-container" style="margin-top: 0.5rem; display: none;">
+              <span style="font-size: 0.75rem; color: #9C9489; display: block; margin-bottom: 0.25rem;">업로드 이미지 미리보기:</span>
+              <img id="image-preview-img" src="" alt="미리보기" style="max-height: 120px; border-radius: 8px; border: 1px solid rgba(201,169,110,0.3);">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="post-excerpt">요약 설명 (검색엔진 서치 프리뷰) *</label>
+            <input type="text" id="post-excerpt" class="form-input" placeholder="글의 주요 내용을 1~2문장으로 요약하세요." required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">본문 내용 (WYSIWYG 리치 에디터) *</label>
+            <div id="editor-container"></div>
+          </div>
+
+          <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn-submit" id="btn-submit-post">포스트 발행하기</button>
+            <button type="button" class="btn-gen-xml" onclick="cancelEdit()">취소</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB 3: SEO & Search Engine Registration Guide -->
+    <div id="seo-tab" class="admin-tab-content">
+      <div class="admin-card">
+        <div class="admin-card-title">🔍 네이버 서치어드바이저 & 구글 서치콘솔 등록 관리</div>
+        <p style="color: #9C9489; font-size: 0.9rem; line-height: 1.7; margin-bottom: 2rem;">
+          주얼리 샘의 블로그 포스트와 웹사이트가 네이버 검색 및 구글 검색 결과(AI Overview 포함)에 빠르게 노출될 수 있도록 자동 생성 도구와 제출 가이드를 제공합니다.
+        </p>
+
+        <!-- Sitemap & RSS XML Generator -->
+        <div class="seo-box">
+          <div class="seo-title">📄 1. Sitemap.xml & RSS 피드 자동 다운로드</div>
+          <div class="seo-desc">
+            현재 작성된 블로그 포스트를 반영한 최신 `sitemap.xml`과 `rss.xml` 파일을 즉시 다운로드하여 서버 또는 GitHub 저장소에 업데이트할 수 있습니다.
+          </div>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="btn-gen-xml" onclick="downloadSitemap()">Sitemap.xml 생성 & 다운로드</button>
+            <button class="btn-gen-xml" onclick="downloadRss()">RSS.xml 생성 & 다운로드</button>
+          </div>
+        </div>
+
+        <!-- Naver Search Advisor Guide -->
+        <div class="seo-box">
+          <div class="seo-title">🟢 2. 네이버 서치어드바이저 (Naver Search Advisor) 등록 방법</div>
+          <div class="seo-desc">
+            1. <strong><a href="https://searchadvisor.naver.com/" target="_blank" style="color: #C9A96E;">네이버 서치어드바이저</a></strong> 로그인 후 [웹마스터 도구] ➡️ 사이트 등록에서 <code>https://jewelrysam.kr</code> (또는 도메인) 추가<br>
+            2. 네이버에서 발급하는 소유확인 메타태그 (<code>&lt;meta name="naver-site-verification" content="..."&gt;</code>) 발급받기<br>
+            3. 웹마스터 도구 ➡️ [요청] ➡️ [사이트맵 제출]에서 <code>sitemap.xml</code> 제출하기<br>
+            4. [요청] ➡️ [RSS 제출]에서 <code>rss.xml</code> 제출하기
+          </div>
+        </div>
+
+        <!-- Google Search Console Guide -->
+        <div class="seo-box">
+          <div class="seo-title">🔵 3. 구글 서치콘솔 (Google Search Console) 등록 방법</div>
+          <div class="seo-desc">
+            1. <strong><a href="https://search.google.com/search-console" target="_blank" style="color: #C9A96E;">구글 서치콘솔</a></strong> 접속 후 사이트 URL 주소 추가<br>
+            2. [Sitemaps] 메뉴 클릭 ➡️ <code>sitemap.xml</code> 입력 후 [제출]<br>
+            3. 신규 블로그 글 작성 시 [URL 검사] 메뉴에서 해당 글 URL을 넣고 [색인 생성 요청]을 누르면 Google AI Overview에 빠르게 노출됩니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentPosts = [];
+    let quillEditor = null;
+    const API_BASE = 'https://documind-backend.lymin80.workers.dev'; // Cloudflare Worker API Host
+
+    // Initialize Quill Editor
+    document.addEventListener('DOMContentLoaded', () => {
+      quillEditor = new Quill('#editor-container', {
+        theme: 'snow',
+        placeholder: '블로그 본문 내용을 여기에 자유롭게 작성하세요. (워드/한글처럼 굵게, 제목 크기, 글머리 기호, 링크, 이미지 삽입 등이 지원됩니다)',
+        modules: {
+          toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['link', 'image'],
+            ['clean']
+          ]
+        }
+      });
+    });
+
+    // Async load posts from DB API / posts.json
+    async function initAdminPosts() {
+      try {
+        const resp = await fetch(`${API_BASE}/api/posts`);
+        if (resp.ok) {
+          const apiPosts = await resp.json();
+          if (Array.isArray(apiPosts) && apiPosts.length > 0) {
+            currentPosts = apiPosts;
+          }
+        }
+      } catch (e) {
+        console.log('API fetch failed, trying local fallback');
+      }
+
+      if (currentPosts.length === 0) {
+        try {
+          const fileResp = await fetch('posts.json?v=' + Date.now());
+          if (fileResp.ok) {
+            currentPosts = await fileResp.json();
+          }
+        } catch (e) {}
+      }
+
+      // Check if session has edits
+      const stored = localStorage.getItem('jewelry_sam_posts');
+      if (stored) {
+        try {
+          const storedPosts = JSON.parse(stored);
+          if (storedPosts && storedPosts.length > 0) {
+            currentPosts = storedPosts;
+          }
+        } catch (e) {}
+      }
+
+      savePosts(currentPosts);
+      renderPostTable();
+    }
+
+    function savePosts(posts) {
+      currentPosts = posts;
+      localStorage.setItem('jewelry_sam_posts', JSON.stringify(posts));
+    }
+
+    // Pure Cloudflare R2 Upload Handler
+    async function uploadToCloudflareR2(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('이미지 파일만 선택 가능합니다.');
+        return;
+      }
+
+      const imgInput = document.getElementById('post-image');
+      const previewContainer = document.getElementById('image-preview-container');
+      const previewImg = document.getElementById('image-preview-img');
+
+      imgInput.value = '☁️ Cloudflare R2에 업로드 중...';
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const resp = await fetch(`${API_BASE}/api/upload`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.success && data.url) {
+            imgInput.value = data.url;
+            previewImg.src = data.url;
+            previewContainer.style.display = 'block';
+            alert('✨ 이미지 Cloudflare R2 업로드 완료!\nR2 URL: ' + data.url);
+            return;
+          }
+        }
+      } catch (e) {
+        console.log('R2 Upload API Error');
+      }
+
+      // If R2 server is offline during dev, use DataURL preview
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        imgInput.value = e.target.result;
+        previewImg.src = e.target.result;
+        previewContainer.style.display = 'block';
+        alert('사진이 첨부되었습니다.');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Render Admin Post Table
+    function renderPostTable() {
+      const tbody = document.getElementById('admin-post-list');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (currentPosts.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #6B6560; padding: 2rem;">등록된 글이 없습니다. 새 글을 작성해 주세요.</td></tr>`;
+        return;
+      }
+
+      currentPosts.forEach((post, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${currentPosts.length - index}</td>
+          <td><code style="color:#C9A96E; font-family: monospace; font-size: 0.85rem; background: rgba(201,169,110,0.1); padding: 0.2rem 0.5rem; border-radius: 4px;">#${post.id}</code></td>
+          <td style="font-weight: 600; color: #F5F0E8;">${escapeHtml(post.title)}</td>
+          <td><span style="color: #C9A96E; font-size: 0.8rem; background: rgba(201,169,110,0.1); padding: 0.2rem 0.6rem; border-radius: 4px;">${escapeHtml(post.category)}</span></td>
+          <td>${post.date}</td>
+          <td>
+            <a href="index.html?post=${post.id}" target="_blank" class="btn-sm btn-edit" style="text-decoration:none; display:inline-block;">👁️ 보기</a>
+            <button class="btn-sm btn-edit" onclick="copyPostLink(${post.id})">🔗 주소 복사</button>
+            <button class="btn-sm btn-edit" onclick="editPost(${post.id})">수정</button>
+            <button class="btn-sm btn-delete" onclick="deletePost(${post.id})">삭제</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function copyPostLink(id) {
+      const shareUrl = `${window.location.origin}/index.html?post=${id}`;
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        alert('✨ 네이버/SNS 전용 블로그 포스트 바로가기 주소(ID: ' + id + ')가 복사되었습니다!\n\n이 주소로 들어오는 사용자는 접속하자마자 이 글 팝업이 자동으로 켜집니다:\n' + shareUrl);
+      }).catch(() => {
+        alert('포스트 주소: ' + shareUrl);
+      });
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.admin-tab-content').forEach(content => content.classList.remove('active'));
+
+      if (event && event.target && event.target.classList.contains('admin-tab-btn')) {
+        event.target.classList.add('active');
+      }
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    async function handlePostSubmit(e) {
+      e.preventDefault();
+      const idInput = document.getElementById('edit-post-id').value;
+      const title = document.getElementById('post-title').value.trim();
+      const category = document.getElementById('post-category').value;
+      const image = document.getElementById('post-image').value.trim();
+      const excerpt = document.getElementById('post-excerpt').value.trim();
+      const content = quillEditor ? quillEditor.root.innerHTML : '';
+
+      if (!content || content === '<p><br></p>') {
+        alert('본문 내용을 입력해 주세요.');
+        return;
+      }
+
+      const postObj = {
+        id: idInput ? parseInt(idInput) : Date.now(),
+        title,
+        category,
+        author: '주얼리 샘',
+        date: new Date().toISOString().split('T')[0],
+        image,
+        excerpt,
+        content
+      };
+
+      // Sync with Workers DB API
+      try {
+        await fetch(`${API_BASE}/api/posts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(postObj)
+        });
+      } catch(err) {
+        console.log('Worker DB API sync error');
+      }
+
+      if (idInput) {
+        const postIndex = currentPosts.findIndex(p => p.id === postObj.id);
+        if (postIndex !== -1) {
+          currentPosts[postIndex] = postObj;
+          alert('포스트가 성공적으로 수정되었습니다!');
+        }
+      } else {
+        currentPosts.unshift(postObj);
+        alert('새 블로그 포스트가 Cloudflare DB에 작성되었습니다!');
+      }
+
+      savePosts(currentPosts);
+      resetForm();
+      renderPostTable();
+      switchTab('posts-tab');
+    }
+
+    function editPost(id) {
+      const post = currentPosts.find(p => p.id === id);
+      if (!post) return;
+
+      document.getElementById('edit-post-id').value = post.id;
+      document.getElementById('post-title').value = post.title;
+      document.getElementById('post-category').value = post.category;
+      document.getElementById('post-image').value = post.image;
+      document.getElementById('post-excerpt').value = post.excerpt;
+      
+      if (quillEditor) {
+        quillEditor.root.innerHTML = post.content || '';
+      }
+
+      if (post.image) {
+        const previewContainer = document.getElementById('image-preview-container');
+        const previewImg = document.getElementById('image-preview-img');
+        previewImg.src = post.image;
+        previewContainer.style.display = 'block';
+      }
+
+      document.getElementById('form-title-text').textContent = '블로그 포스트 수정';
+      document.getElementById('btn-submit-post').textContent = '포스트 수정 완료';
+
+      switchTab('write-tab');
+    }
+
+    function cancelEdit() {
+      resetForm();
+      switchTab('posts-tab');
+    }
+
+    function resetForm() {
+      document.getElementById('post-form').reset();
+      document.getElementById('edit-post-id').value = '';
+      document.getElementById('form-title-text').textContent = '새 블로그 포스트 작성';
+      document.getElementById('btn-submit-post').textContent = '포스트 발행하기';
+      document.getElementById('post-image').value = 'images/gold_bar.png';
+      document.getElementById('image-preview-container').style.display = 'none';
+
+      if (quillEditor) {
+        quillEditor.root.innerHTML = '';
+      }
+    }
+
+    async function deletePost(id) {
+      if (!confirm('이 블로그 포스트를 삭제하시겠습니까?')) return;
+
+      try {
+        await fetch(`${API_BASE}/api/posts/${id}`, { method: 'DELETE' });
+      } catch(e) {}
+
+      currentPosts = currentPosts.filter(p => p.id !== id);
+      savePosts(currentPosts);
+      renderPostTable();
+    }
+
+
+
+    function downloadPostsJson() {
+      const dataStr = JSON.stringify(currentPosts, null, 2);
+      downloadFile('posts.json', dataStr, 'application/json');
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // Download sitemap.xml
+    function downloadSitemap() {
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+      xml += `  <url>\n    <loc>https://jewelrysam.kr/</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+      
+      currentPosts.forEach(post => {
+        xml += `  <url>\n    <loc>https://jewelrysam.kr/#blog-post-${post.id}</loc>\n    <lastmod>${post.date}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+      });
+
+      xml += `</urlset>`;
+
+      downloadFile('sitemap.xml', xml, 'text/xml');
+    }
+
+    // Download rss.xml
+    function downloadRss() {
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n`;
+      xml += `    <title>주얼리 샘 블로그 | Jewelry SAM</title>\n    <link>https://jewelrysam.kr</link>\n    <description>종로 프리미엄 주얼리 샘의 공식 블로그 - 골드바, 귀걸이, 목걸이, 팔찌, 커플링 소식</description>\n`;
+
+      currentPosts.forEach(post => {
+        xml += `    <item>\n`;
+        xml += `      <title><![CDATA[${post.title}]]></title>\n`;
+        xml += `      <link>https://jewelrysam.kr/#blog-post-${post.id}</link>\n`;
+        xml += `      <description><![CDATA[${post.excerpt}]]></description>\n`;
+        xml += `      <pubDate>${post.date}</pubDate>\n`;
+        xml += `    </item>\n`;
+      });
+
+      xml += `  </channel>\n</rss>`;
+
+      downloadFile('rss.xml', xml, 'text/xml');
+    }
+
+    function downloadFile(filename, text, mimeType) {
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', filename);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+
+    // Admin Authentication Check
+    function checkAdminAuth() {
+      const isAuth = sessionStorage.getItem('sam_admin_auth') === 'true';
+      const overlay = document.getElementById('loginOverlay');
+      if (isAuth) {
+        overlay.style.display = 'none';
+      } else {
+        overlay.style.display = 'flex';
+      }
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const id = document.getElementById('login-id').value.trim();
+      const pw = document.getElementById('login-pw').value.trim();
+      const errorMsg = document.getElementById('loginErrorMsg');
+
+      if (id === 'admin' && pw === '!1asdfasdf') {
+        sessionStorage.setItem('sam_admin_auth', 'true');
+        errorMsg.style.display = 'none';
+        checkAdminAuth();
+        alert('관리자로 로그인되었습니다!');
+      } else {
+        errorMsg.style.display = 'block';
+      }
+    }
+
+    function handleAdminLogout() {
+      if (confirm('관리자 시스템에서 로그아웃 하시겠습니까?')) {
+        sessionStorage.removeItem('sam_admin_auth');
+        checkAdminAuth();
+      }
+    }
+
+    // Initialize
+    checkAdminAuth();
+    initAdminPosts();
+  </script>
+</body>
+</html>

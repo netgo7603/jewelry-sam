@@ -1,14 +1,7 @@
 /**
- * Cloudflare Worker API & AI RAG Knowledge Base for Jewelry SAM
- * 
- * Features:
- * 1. Cloudflare R2 Image Upload (POST /api/upload)
- * 2. Cloudflare KV Database CRUD for Posts (GET, POST, PUT, DELETE /api/posts)
- * 3. AI Vector / Knowledge Base RAG Chatbot (POST /api/chat)
- * 4. Real-time Live Chat Queue for Admin & Customer (GET/POST /api/live-chat)
+ * Cloudflare Worker API & AI RAG Multi-Session Live Chat Engine for Jewelry SAM
  */
 
-// Embedded Jewelry SAM FAQ Knowledge Base
 const JEWELRY_SAM_KB = [
   {
     keywords: ["위치", "주소", "찾아가는", "어디", "연락처", "전화번호", "종로"],
@@ -20,7 +13,7 @@ const JEWELRY_SAM_KB = [
   },
   {
     keywords: ["주차", "주차장", "차량", "무료주차"],
-    answer: "🚗 **주차 지원 안내**\n효성주얼리시티 건물 지하 주차장을 편리하게 이용하실 수 있습니다.\n매장에서 상담받으시거나 구매하시는 모든 고객님께 **무료 주차권**을 발급해 드립니다!"
+    answer: "🚗 **주차 지원 안내**\n효성주얼리시티 건물 지하 주차장을 편리하게 이용하실 수 있습니다.\n매장에 방문하여 상담받으시거나 구매하시는 모든 고객님께 **무료 주차권**을 발급해 드립니다!"
   },
   {
     keywords: ["시세", "금시세", "오늘", "가격", "18k", "14k", "24k", "순금"],
@@ -49,10 +42,6 @@ const JEWELRY_SAM_KB = [
   {
     keywords: ["택배", "배송", "지방"],
     answer: "📦 **우체국 안심택배 배송 서비스**\n귀금속 전용 안전 우체국 안심택배(보안 보험 가입 배송)를 이용해 전국 어디나 안심 직배송해 드립니다."
-  },
-  {
-    keywords: ["상담", "상담원", "연결", "직원", "대표"],
-    answer: "🧑‍💻 **실시간 1:1 상담원 연결 요청 중...**\n주얼리 샘 대표 이효진 및 상담원이 실시간 대화를 확인하는 즉시 바로 답변해 드리겠습니다. (급하신 문의: 010-7448-7478)"
   }
 ];
 
@@ -60,7 +49,6 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // Handle CORS preflight
     if (request.method === "OPTIONS") {
       return new Response(null, {
         headers: {
@@ -77,7 +65,6 @@ export default {
       "Content-Type": "application/json; charset=utf-8",
     };
 
-    // Route static assets (index.html, admin.html, images, CSS, etc.)
     if (env.ASSETS && !url.pathname.startsWith("/api/")) {
       return await env.ASSETS.fetch(request);
     }
@@ -85,10 +72,9 @@ export default {
     try {
       // 1. AI RAG Vector Chatbot API (POST /api/chat)
       if (url.pathname === "/api/chat" && request.method === "POST") {
-        const { message, history } = await request.json();
+        const { message } = await request.json();
         const userMsg = (message || "").toLowerCase().trim();
 
-        // Search KB by keywords
         let matchedAnswer = null;
         for (const item of JEWELRY_SAM_KB) {
           if (item.keywords.some((kw) => userMsg.includes(kw))) {
@@ -111,13 +97,49 @@ export default {
         );
       }
 
-      // 2. Real-Time Live Chat Queue GET/POST (/api/live-chat)
-      if (url.pathname === "/api/live-chat" && request.method === "GET") {
+      // 2. GET Sessions List for Admin (GET /api/live-chat/sessions)
+      if (url.pathname === "/api/live-chat/sessions" && request.method === "GET") {
         let messages = [];
         if (env.SAM_KV) {
           const stored = await env.SAM_KV.get("jewelry_sam_live_chat");
           if (stored) messages = JSON.parse(stored);
         }
+
+        // Group by sessionId
+        const sessionMap = {};
+        messages.forEach(m => {
+          const sid = m.sessionId || 'default';
+          if (!sessionMap[sid]) {
+            sessionMap[sid] = {
+              sessionId: sid,
+              userId: m.userId || '방문 고객',
+              lastText: m.text,
+              lastTime: m.time,
+              unread: 0
+            };
+          } else {
+            sessionMap[sid].lastText = m.text;
+            sessionMap[sid].lastTime = m.time;
+          }
+        });
+
+        const sessions = Object.values(sessionMap).reverse();
+        return new Response(JSON.stringify(sessions), { headers: corsHeaders });
+      }
+
+      // 3. GET/POST Live Chat Messages (/api/live-chat)
+      if (url.pathname === "/api/live-chat" && request.method === "GET") {
+        const targetSessionId = url.searchParams.get("sessionId");
+        let messages = [];
+        if (env.SAM_KV) {
+          const stored = await env.SAM_KV.get("jewelry_sam_live_chat");
+          if (stored) messages = JSON.parse(stored);
+        }
+
+        if (targetSessionId) {
+          messages = messages.filter(m => (m.sessionId || 'default') === targetSessionId);
+        }
+
         return new Response(JSON.stringify(messages), { headers: corsHeaders });
       }
 
@@ -131,6 +153,9 @@ export default {
 
         chatData.id = Date.now();
         chatData.time = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        if (!chatData.sessionId) {
+          chatData.sessionId = 'default';
+        }
         messages.push(chatData);
 
         if (env.SAM_KV) {
@@ -140,7 +165,7 @@ export default {
         return new Response(JSON.stringify({ success: true, messages }), { headers: corsHeaders });
       }
 
-      // 3. Cloudflare R2 Upload (POST /api/upload)
+      // 4. Cloudflare R2 Upload (POST /api/upload)
       if (url.pathname === "/api/upload" && request.method === "POST") {
         const formData = await request.formData();
         const file = formData.get("file");
@@ -170,22 +195,7 @@ export default {
         );
       }
 
-      // 4. Get R2 File (GET /r2/:filename)
-      if (url.pathname.startsWith("/r2/") && request.method === "GET") {
-        const filename = url.pathname.replace("/r2/", "");
-        if (env.SAM_R2_BUCKET) {
-          const object = await env.SAM_R2_BUCKET.get(filename);
-          if (object) {
-            const headers = new Headers();
-            object.writeHttpMetadata(headers);
-            headers.set("Access-Control-Allow-Origin", "*");
-            return new Response(object.body, { headers });
-          }
-        }
-        return new Response("File not found", { status: 404 });
-      }
-
-      // 5. GET Posts List (GET /api/posts)
+      // 5. Get Posts List (GET /api/posts)
       if (url.pathname === "/api/posts" && request.method === "GET") {
         let posts = [];
         if (env.SAM_KV) {

@@ -245,7 +245,12 @@
   window.JewelrySamWidget = { open: () => toggleWidget(true) };
 
   let isLiveMode = false;
-  const currentUserId = '방문고객_' + Math.floor(1000 + Math.random() * 9000);
+  let currentSessionId = localStorage.getItem('sam_session_id');
+  if (!currentSessionId) {
+    currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+    localStorage.setItem('sam_session_id', currentSessionId);
+  }
+  const currentUserId = '고객_' + currentSessionId.substring(currentSessionId.length - 4);
 
   // 5. Send Message Handler
   chatForm.onsubmit = async (e) => {
@@ -256,12 +261,13 @@
     appendMsg(text, 'user');
     chatInput.value = '';
 
-    // Always post user message to admin live chat queue so admin sees customer texts!
+    // Always post user message to admin live chat queue with sessionId
     try {
       fetch(`${API_HOST}/api/live-chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          sessionId: currentSessionId,
           isAdmin: false,
           userId: currentUserId,
           text: text
@@ -304,6 +310,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          sessionId: currentSessionId,
           isAdmin: false,
           userId: currentUserId,
           text: '🧑‍💻 고객님이 실시간 1:1 상담원 연결을 요청하셨습니다.'
@@ -320,7 +327,7 @@
     messagesBox.scrollTop = messagesBox.scrollHeight;
   }
 
-  // 7. Live Sync Messages from Admin
+  // 7. Live Sync Messages from Admin for THIS session
   function startLiveChatSync() {
     syncLiveMessages();
     if (!pollInterval) {
@@ -330,11 +337,11 @@
 
   async function syncLiveMessages() {
     try {
-      const resp = await fetch(`${API_HOST}/api/live-chat`);
+      const resp = await fetch(`${API_HOST}/api/live-chat?sessionId=${currentSessionId}`);
       if (resp.ok) {
         const messages = await resp.json();
         const adminMsgs = messages.filter(m => m.isAdmin);
-        // If there are admin responses, render them & force live mode
+        // If there are admin responses for THIS session, render them
         adminMsgs.forEach(m => {
           if (!shadow.getElementById(`admin-msg-${m.id}`)) {
             isLiveMode = true; // Auto enable live mode when admin responds

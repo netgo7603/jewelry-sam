@@ -156,13 +156,17 @@ export default {
       async function getKvPosts() {
         if (env.SAM_KV) {
           const stored = await env.SAM_KV.get("jewelry_sam_posts");
-          if (stored) {
-            return JSON.parse(stored);
-          } else {
-            // Seed initial DB posts into KV if completely empty for the very first time
-            await env.SAM_KV.put("jewelry_sam_posts", JSON.stringify(SEED_POSTS));
-            return SEED_POSTS;
+          if (stored !== null && stored !== undefined) {
+            try {
+              const parsed = JSON.parse(stored);
+              if (Array.isArray(parsed)) {
+                return parsed;
+              }
+            } catch(e) {}
           }
+          // Seed initial DB posts into KV if completely empty for the very first time
+          await env.SAM_KV.put("jewelry_sam_posts", JSON.stringify(SEED_POSTS));
+          return SEED_POSTS;
         }
         return SEED_POSTS;
       }

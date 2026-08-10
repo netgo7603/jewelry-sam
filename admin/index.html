@@ -509,8 +509,11 @@
     <div id="posts-tab" class="admin-tab-content active">
       <div class="admin-card">
         <div class="admin-card-title">
-          <span>등록된 블로그 포스트 목록</span>
-          <button class="btn-submit" onclick="switchTab('write-tab')">+ 새 포스트 추가</button>
+          <span>등록된 블로그 포스트 목록 (<strong id="db-post-count" style="color: #4ade80;">DB 0건</strong>)</span>
+          <div style="display:flex; gap: 0.5rem;">
+            <button class="btn-sm btn-edit" onclick="initAdminPosts()">🔄 DB 새로고침</button>
+            <button class="btn-submit" onclick="switchTab('write-tab')">+ 새 포스트 추가</button>
+          </div>
         </div>
         <p style="color: #9C9489; font-size: 0.85rem; margin-bottom: 1.5rem;">
           이곳에 등록된 글은 메인 홈페이지의 [블로그] 섹션에 즉시 노출되며, 검색엔진(네이버, 구글)에 수집됩니다.
@@ -806,6 +809,10 @@
     // Render Admin Post Table
     function renderPostTable() {
       const tbody = document.getElementById('admin-post-list');
+      const countBadge = document.getElementById('db-post-count');
+      if (countBadge) {
+        countBadge.textContent = `DB ${currentPosts.length}건`;
+      }
       if (!tbody) return;
       tbody.innerHTML = '';
 

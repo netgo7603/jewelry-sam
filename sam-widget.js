@@ -303,7 +303,7 @@
   // 6. Connect to Live Agent (Switch to Live Mode)
   agentBtn.onclick = async () => {
     isLiveMode = true;
-    appendMsg('🟢 **실시간 1:1 상담원(대표 이효진) 모드**로 전환되었습니다.\nAI 챗봇 응답이 정지되고 상담원이 직접 대화에 참여합니다.', 'bot');
+    appendMsg('🟢 **실시간 1:1 상담원 모드**로 전환되었습니다.\nAI 챗봇 응답이 정지되고 상담원이 직접 대화에 참여합니다.', 'bot');
     
     try {
       await fetch(`${API_HOST}/api/live-chat`, {
@@ -348,7 +348,7 @@
             const div = document.createElement('div');
             div.id = `admin-msg-${m.id}`;
             div.className = 'msg msg-admin';
-            div.innerHTML = `👤 대표 이효진 (상담원):\n${m.text}`;
+            div.innerHTML = `👤 상담원:\n${m.text}`;
             messagesBox.appendChild(div);
             messagesBox.scrollTop = messagesBox.scrollHeight;
           }

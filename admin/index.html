@@ -662,7 +662,7 @@
   <script>
     let currentPosts = [];
     let quillEditor = null;
-    const API_BASE = 'https://documind-backend.lymin80.workers.dev'; // Cloudflare Worker API Host
+    const API_BASE = window.location.origin.includes('lymin80.shop') ? window.location.origin : 'https://jewelry-sam-api.lymin80.workers.dev';
 
     // Initialize Quill Editor
     document.addEventListener('DOMContentLoaded', () => {

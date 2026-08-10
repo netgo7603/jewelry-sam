@@ -831,7 +831,8 @@
 
     function notifyAgentConnection(userText) {
       try {
-        fetch('https://documind-backend.lymin80.workers.dev/api/live-chat', {
+        const apiHost = window.location.origin.includes('lymin80.shop') ? window.location.origin : 'https://jewelry-sam-api.lymin80.workers.dev';
+        fetch(`${apiHost}/api/live-chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

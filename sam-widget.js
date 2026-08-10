@@ -244,7 +244,10 @@
   window.DocuMindWidget = { open: () => toggleWidget(true) };
   window.JewelrySamWidget = { open: () => toggleWidget(true) };
 
-  // 5. Send Message to SAM AI Chatbot API
+  let isLiveMode = false;
+  const currentUserId = '방문고객_' + Math.floor(1000 + Math.random() * 9000);
+
+  // 5. Send Message Handler
   chatForm.onsubmit = async (e) => {
     e.preventDefault();
     const text = chatInput.value.trim();
@@ -253,7 +256,25 @@
     appendMsg(text, 'user');
     chatInput.value = '';
 
-    // Send to native AI Vector DB backend
+    // Always post user message to admin live chat queue so admin sees customer texts!
+    try {
+      fetch(`${API_HOST}/api/live-chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          isAdmin: false,
+          userId: currentUserId,
+          text: text
+        })
+      }).catch(() => {});
+    } catch(e) {}
+
+    // If in Live Mode, DO NOT invoke AI chatbot. Wait for admin response.
+    if (isLiveMode) {
+      return;
+    }
+
+    // Default Mode: Send to native AI Vector DB backend
     try {
       const resp = await fetch(`${API_HOST}/api/chat`, {
         method: 'POST',
@@ -262,25 +283,29 @@
       });
       if (resp.ok) {
         const data = await resp.json();
-        if (data.reply) {
+        if (data.reply && !isLiveMode) {
           appendMsg(data.reply, 'bot');
         }
       }
     } catch (err) {
-      appendMsg('💎 문의하신 내용을 접수 중입니다. 010-7448-7478 로 전화주시면 즉시 1:1 안내해 드립니다!', 'bot');
+      if (!isLiveMode) {
+        appendMsg('💎 문의하신 내용을 접수 중입니다. 010-7448-7478 로 전화주시면 즉시 1:1 안내해 드립니다!', 'bot');
+      }
     }
   };
 
-  // 6. Connect to Live Agent (Notify Admin)
+  // 6. Connect to Live Agent (Switch to Live Mode)
   agentBtn.onclick = async () => {
-    appendMsg('🧑‍💻 실시간 1:1 상담사 연결을 요청하셨습니다. 관리자가 곧 답변해 드립니다.', 'user');
+    isLiveMode = true;
+    appendMsg('🟢 **실시간 1:1 상담원(대표 이효진) 모드**로 전환되었습니다.\nAI 챗봇 응답이 정지되고 상담원이 직접 대화에 참여합니다.', 'bot');
+    
     try {
       await fetch(`${API_HOST}/api/live-chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           isAdmin: false,
-          userId: '고객_' + Math.floor(1000 + Math.random() * 9000),
+          userId: currentUserId,
           text: '🧑‍💻 고객님이 실시간 1:1 상담원 연결을 요청하셨습니다.'
         })
       });
@@ -299,7 +324,7 @@
   function startLiveChatSync() {
     syncLiveMessages();
     if (!pollInterval) {
-      pollInterval = setInterval(syncLiveMessages, 2500);
+      pollInterval = setInterval(syncLiveMessages, 2000);
     }
   }
 
@@ -309,9 +334,10 @@
       if (resp.ok) {
         const messages = await resp.json();
         const adminMsgs = messages.filter(m => m.isAdmin);
-        // If there are admin responses, render them
+        // If there are admin responses, render them & force live mode
         adminMsgs.forEach(m => {
           if (!shadow.getElementById(`admin-msg-${m.id}`)) {
+            isLiveMode = true; // Auto enable live mode when admin responds
             const div = document.createElement('div');
             div.id = `admin-msg-${m.id}`;
             div.className = 'msg msg-admin';

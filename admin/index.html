@@ -177,24 +177,44 @@
       line-height: 1.7;
     }
 
-      color: #C9A96E;
-    }
-
     .btn-submit {
-      background: linear-gradient(135deg, #C9A96E, #A88B52);
+      background: linear-gradient(135deg, #C9A96E 0%, #A88B52 100%);
       color: #0C0A08;
       border: none;
-      padding: 0.9rem 2rem;
+      padding: 0.9rem 2.2rem;
       font-size: 0.95rem;
       font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 15px rgba(201, 169, 110, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+      filter: brightness(1.15);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201, 169, 110, 0.35);
+    }
+
+    .btn-cancel {
+      background: rgba(255, 255, 255, 0.08);
+      color: #9C9489;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.9rem 1.8rem;
+      font-size: 0.95rem;
+      font-weight: 600;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.3s ease;
     }
 
-    .btn-submit:hover {
-      filter: brightness(1.1);
-      transform: translateY(-2px);
+    .btn-cancel:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #F5F0E8;
     }
 
     .post-table {

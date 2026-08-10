@@ -81,6 +81,12 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
 
+    // Serve static website assets (HTML, CSS, JS) for non-API routes
+    const isApiOrR2 = url.pathname.startsWith("/api/") || url.pathname.startsWith("/r2/");
+    if (!isApiOrR2 && env.ASSETS) {
+      return await env.ASSETS.fetch(request);
+    }
+
     const pathname = url.pathname.replace(/\/$/, "");
 
     try {

@@ -2,6 +2,9 @@ name = "jewelry-sam-api"
 main = "worker/index.js"
 compatibility_date = "2024-01-01"
 
+[assets]
+directory = "."
+
 # Cloudflare R2 Bucket Binding for Image Storage
 [[r2_buckets]]
 binding = "SAM_R2_BUCKET"

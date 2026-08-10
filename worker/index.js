@@ -229,7 +229,7 @@ export default {
           });
         }
 
-        const r2PublicDomain = env.R2_PUBLIC_DOMAIN || "https://sam.lymin80.shop/r2";
+        const r2PublicDomain = env.R2_PUBLIC_DOMAIN || "https://jewelry-sam-api.lymin80.workers.dev/r2";
         const imageUrl = `${r2PublicDomain}/${filename}`;
 
         return new Response(

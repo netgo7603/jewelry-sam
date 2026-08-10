@@ -712,7 +712,7 @@
   <script>
     let currentPosts = [];
     let quillEditor = null;
-    const API_BASE = window.location.origin.includes('lymin80.shop') ? window.location.origin : 'https://jewelry-sam-api.lymin80.workers.dev';
+    const API_BASE = 'https://jewelry-sam-api.lymin80.workers.dev';
 
     // Initialize Quill Editor
     document.addEventListener('DOMContentLoaded', () => {
@@ -754,18 +754,6 @@
         } catch (e) {}
       }
 
-      // Check if session has edits
-      const stored = localStorage.getItem('jewelry_sam_posts');
-      if (stored) {
-        try {
-          const storedPosts = JSON.parse(stored);
-          if (storedPosts && storedPosts.length > 0) {
-            currentPosts = storedPosts;
-          }
-        } catch (e) {}
-      }
-
-      savePosts(currentPosts);
       renderPostTable();
     }
 

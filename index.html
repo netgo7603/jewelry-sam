@@ -679,9 +679,7 @@
     // Blog Rendering & Modal Manager
     // ==========================================
     let loadedPosts = [];
-    const API_BASE = window.location.origin.includes('lymin80.shop') 
-      ? window.location.origin 
-      : 'https://jewelry-sam-api.lymin80.workers.dev';
+    const API_BASE = 'https://jewelry-sam-api.lymin80.workers.dev';
 
     async function fetchHomePagePosts() {
       try {

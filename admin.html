@@ -371,7 +371,8 @@
         <table class="post-table">
           <thead>
             <tr>
-              <th>번호</th>
+              <th>순번</th>
+              <th>포스트 번호 (ID)</th>
               <th>제목</th>
               <th>카테고리</th>
               <th>작성일</th>
@@ -397,20 +398,14 @@
             <input type="text" id="post-title" class="form-input" placeholder="예: [종로 골드바] 24K 순금 골드바 현명하게 선택하는 법" required>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-              <label class="form-label" for="post-category">카테고리 *</label>
-              <select id="post-category" class="form-select">
-                <option value="골드바 투자">골드바 투자</option>
-                <option value="주얼리 팁">주얼리 팁</option>
-                <option value="커플링 가이드">커플링 가이드</option>
-                <option value="매장 소식">매장 소식</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="post-author">작성자 *</label>
-              <input type="text" id="post-author" class="form-input" value="대표 이효진" required>
-            </div>
+          <div class="form-group">
+            <label class="form-label" for="post-category">카테고리 *</label>
+            <select id="post-category" class="form-select">
+              <option value="골드바 투자">골드바 투자</option>
+              <option value="주얼리 팁">주얼리 팁</option>
+              <option value="커플링 가이드">커플링 가이드</option>
+              <option value="매장 소식">매장 소식</option>
+            </select>
           </div>
 
           <div class="form-group">
@@ -599,6 +594,7 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${currentPosts.length - index}</td>
+          <td><code style="color:#C9A96E; font-family: monospace; font-size: 0.85rem; background: rgba(201,169,110,0.1); padding: 0.2rem 0.5rem; border-radius: 4px;">#${post.id}</code></td>
           <td style="font-weight: 600; color: #F5F0E8;">${escapeHtml(post.title)}</td>
           <td><span style="color: #C9A96E; font-size: 0.8rem; background: rgba(201,169,110,0.1); padding: 0.2rem 0.6rem; border-radius: 4px;">${escapeHtml(post.category)}</span></td>
           <td>${post.date}</td>
@@ -616,7 +612,7 @@
     function copyPostLink(id) {
       const shareUrl = `${window.location.origin}/index.html?post=${id}`;
       navigator.clipboard.writeText(shareUrl).then(() => {
-        alert('✨ 네이버/SNS 전용 블로그 포스트 주소가 복사되었습니다!\n\n이 주소로 들어오는 사용자는 접속하자마자 이 글 팝업이 자동으로 켜집니다:\n' + shareUrl);
+        alert('✨ 네이버/SNS 전용 블로그 포스트 바로가기 주소(ID: ' + id + ')가 복사되었습니다!\n\n이 주소로 들어오는 사용자는 접속하자마자 이 글 팝업이 자동으로 켜집니다:\n' + shareUrl);
       }).catch(() => {
         alert('포스트 주소: ' + shareUrl);
       });
@@ -641,7 +637,6 @@
       const idInput = document.getElementById('edit-post-id').value;
       const title = document.getElementById('post-title').value.trim();
       const category = document.getElementById('post-category').value;
-      const author = document.getElementById('post-author').value.trim();
       const image = document.getElementById('post-image').value.trim();
       const excerpt = document.getElementById('post-excerpt').value.trim();
       const content = document.getElementById('post-content').value.trim();
@@ -650,7 +645,7 @@
         id: idInput ? parseInt(idInput) : Date.now(),
         title,
         category,
-        author,
+        author: '주얼리 샘',
         date: new Date().toISOString().split('T')[0],
         image,
         excerpt,
@@ -692,7 +687,6 @@
       document.getElementById('edit-post-id').value = post.id;
       document.getElementById('post-title').value = post.title;
       document.getElementById('post-category').value = post.category;
-      document.getElementById('post-author').value = post.author;
       document.getElementById('post-image').value = post.image;
       document.getElementById('post-excerpt').value = post.excerpt;
       document.getElementById('post-content').value = post.content;
@@ -713,7 +707,6 @@
       document.getElementById('edit-post-id').value = '';
       document.getElementById('form-title-text').textContent = '새 블로그 포스트 작성';
       document.getElementById('btn-submit-post').textContent = '포스트 발행하기';
-      document.getElementById('post-author').value = '대표 이효진';
       document.getElementById('post-image').value = 'images/gold_bar.png';
     }
 

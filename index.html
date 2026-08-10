@@ -739,7 +739,7 @@
             <span class="blog-card-tag">${escapeHtml(post.category)}</span>
           </div>
           <div class="blog-card-content">
-            <div class="blog-card-meta">${escapeHtml(post.author)} · ${escapeHtml(post.date)}</div>
+            <div class="blog-card-meta">${escapeHtml(post.date)}</div>
             <h3 class="blog-card-title">${escapeHtml(post.title)}</h3>
             <p class="blog-card-excerpt">${escapeHtml(post.excerpt)}</p>
             <div class="blog-card-readmore">
@@ -763,7 +763,7 @@
       currentActivePostId = id;
       document.getElementById('modal-blog-category').textContent = post.category;
       document.getElementById('modal-blog-title').textContent = post.title;
-      document.getElementById('modal-blog-meta').textContent = `${post.author} · ${post.date}`;
+      document.getElementById('modal-blog-meta').textContent = `${post.date}`;
       document.getElementById('modal-blog-img').src = post.image;
       document.getElementById('modal-blog-body').innerHTML = post.content;
 

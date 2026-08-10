@@ -606,8 +606,11 @@
           <!-- Right: Real-Time Chat Room -->
           <div style="display: flex; flex-direction: column; height: 100%; padding: 1rem; min-height: 0;">
             <div style="border-bottom: 1px solid rgba(201,169,110,0.15); padding-bottom: 0.75rem; font-weight: 600; color: #F5F0E8; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
-              <span>💬 고객 1:1 상담실 — <strong style="color: #C9A96E;">상담원</strong></span>
-              <button class="btn-sm btn-edit" onclick="fetchAdminLiveChatMessages()">🔄 새로고침</button>
+              <span>💬 고객 1:1 상담실 — <strong style="color: #C9A96E;">상담원 모드</strong></span>
+              <div style="display:flex; gap:0.5rem;">
+                <button class="btn-sm btn-delete" onclick="handleAdminEndChat()" style="background: rgba(239,68,68,0.2); border-color: #ef4444; color: #ef4444;">🔴 상담 종료</button>
+                <button class="btn-sm btn-edit" onclick="fetchAdminLiveChatMessages()">🔄 새로고침</button>
+              </div>
             </div>
 
             <!-- Messages Window with Smooth Auto Scroll -->
@@ -959,6 +962,32 @@
       } catch(e) {}
 
       input.value = '';
+      fetchAdminLiveChatMessages();
+    }
+
+    async function handleAdminEndChat() {
+      if (!activeSessionId) {
+        alert('종료할 대화 세션을 선택해 주세요.');
+        return;
+      }
+      if (!confirm('현재 1:1 대화를 종료하고 고객을 24h AI 챗봇 모드로 전환하시겠습니까?')) return;
+
+      const chatObj = {
+        sessionId: activeSessionId,
+        isAdmin: true,
+        isEnd: true,
+        userId: '상담원',
+        text: '🔴 상담원에 의해 1:1 상담이 종료되었습니다.'
+      };
+
+      try {
+        await fetch(`${API_BASE}/api/live-chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(chatObj)
+        });
+      } catch(e) {}
+
       fetchAdminLiveChatMessages();
     }
 

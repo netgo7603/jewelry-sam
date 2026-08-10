@@ -185,8 +185,7 @@
     <button class="fab-button" id="samFabBtn">
       <span class="fab-icon">💎</span>
     </button>
-    
-    <div class="chat-drawer" id="samChatDrawer">
+      <div class="chat-drawer" id="samChatDrawer">
       <div class="chat-header">
         <div class="header-info">
           <div class="status-dot"></div>
@@ -195,12 +194,15 @@
             <div style="font-size:11px; color:#9C9489;">서울 종로 효성주얼리시티 1083호</div>
           </div>
         </div>
-        <button class="close-btn" id="samCloseBtn">&times;</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button id="samEndBtn" style="display:none; background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#ef4444; font-size:11px; padding:4px 9px; border-radius:12px; cursor:pointer;">🔴 상담 종료</button>
+          <button class="close-btn" id="samCloseBtn">&times;</button>
+        </div>
       </div>
 
       <div class="chat-messages" id="samMessages">
         <div class="msg msg-bot">💎 안녕하세요! 종로 프리미엄 주얼리 샘 24h AI 상담원입니다.<br><br>금시세, 순금 골드바, 커플링, 다이아몬드, 위치 및 무료 주차 안내 등 궁금한 내용을 물어보세요!</div>
-        <button class="agent-btn" id="samAgentBtn">🧑‍💻 실시간 1:1 상담사 연결 요청하기</button>
+        <button class="agent-btn" id="samAgentBtn">🧑‍💻 실시간 1:1 상담원 연결 요청하기</button>
       </div>
 
       <form class="chat-input-area" id="samChatForm">
@@ -217,6 +219,7 @@
   const fabBtn = shadow.getElementById('samFabBtn');
   const chatDrawer = shadow.getElementById('samChatDrawer');
   const closeBtn = shadow.getElementById('samCloseBtn');
+  const endBtn = shadow.getElementById('samEndBtn');
   const messagesBox = shadow.getElementById('samMessages');
   const chatForm = shadow.getElementById('samChatForm');
   const chatInput = shadow.getElementById('samInput');
@@ -251,6 +254,37 @@
     localStorage.setItem('sam_session_id', currentSessionId);
   }
   const currentUserId = '고객_' + currentSessionId.substring(currentSessionId.length - 4);
+
+  function endLiveChat(byAdmin) {
+    if (!isLiveMode) return;
+    isLiveMode = false;
+    endBtn.style.display = 'none';
+    agentBtn.style.display = 'block';
+
+    const msgText = byAdmin 
+      ? '🔴 상담원에 의해 1:1 상담이 종료되었습니다.\n다시 24h AI 챗봇 모드로 전환됩니다.' 
+      : '🔴 1:1 상담이 종료되었습니다. 24h AI 챗봇 모드로 전환됩니다.';
+
+    appendMsg(msgText, 'bot');
+
+    if (!byAdmin) {
+      try {
+        fetch(`${API_HOST}/api/live-chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: currentSessionId,
+            isAdmin: false,
+            userId: currentUserId,
+            isEnd: true,
+            text: '🔴 고객님이 1:1 상담을 종료하셨습니다.'
+          })
+        }).catch(() => {});
+      } catch(e) {}
+    }
+  }
+
+  endBtn.onclick = () => endLiveChat(false);
 
   // 5. Send Message Handler
   chatForm.onsubmit = async (e) => {
@@ -303,6 +337,8 @@
   // 6. Connect to Live Agent (Switch to Live Mode)
   agentBtn.onclick = async () => {
     isLiveMode = true;
+    endBtn.style.display = 'block';
+    agentBtn.style.display = 'none';
     appendMsg('🟢 **실시간 1:1 상담원 모드**로 전환되었습니다.\nAI 챗봇 응답이 정지되고 상담원이 직접 대화에 참여합니다.', 'bot');
     
     try {
@@ -340,11 +376,33 @@
       const resp = await fetch(`${API_HOST}/api/live-chat?sessionId=${currentSessionId}`);
       if (resp.ok) {
         const messages = await resp.json();
-        const adminMsgs = messages.filter(m => m.isAdmin);
+        
+        // Check if admin ended conversation
+        const endMsg = messages.find(m => m.isAdmin && m.isEnd);
+        if (endMsg && isLiveMode) {
+          endLiveChat(true);
+          return;
+        }
+
+        const adminMsgs = messages.filter(m => m.isAdmin && !m.isEnd);
         // If there are admin responses for THIS session, render them
         adminMsgs.forEach(m => {
           if (!shadow.getElementById(`admin-msg-${m.id}`)) {
             isLiveMode = true; // Auto enable live mode when admin responds
+            endBtn.style.display = 'block';
+            agentBtn.style.display = 'none';
+            const div = document.createElement('div');
+            div.id = `admin-msg-${m.id}`;
+            div.className = 'msg msg-admin';
+            div.innerHTML = `👤 상담원:\n${m.text}`;
+            messagesBox.appendChild(div);
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+          }
+        });
+      }
+    } catch(e) {}
+  }
+})();veMode = true; // Auto enable live mode when admin responds
             const div = document.createElement('div');
             div.id = `admin-msg-${m.id}`;
             div.className = 'msg msg-admin';

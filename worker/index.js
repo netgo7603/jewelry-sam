@@ -346,7 +346,7 @@ export default {
         let posts = await getKvPosts();
 
         if (postData.id) {
-          const idx = posts.findIndex((p) => p.id === postData.id);
+          const idx = posts.findIndex((p) => String(p.id) === String(postData.id));
           if (idx !== -1) {
             posts[idx] = { ...posts[idx], ...postData };
           } else {
@@ -369,9 +369,9 @@ export default {
 
       // 8. Delete Post (Pure KV DB 100%)
       if (url.pathname.startsWith("/api/posts/") && request.method === "DELETE") {
-        const id = parseInt(url.pathname.replace("/api/posts/", ""));
+        const targetId = url.pathname.replace("/api/posts/", "");
         let posts = await getKvPosts();
-        posts = posts.filter((p) => p.id !== id);
+        posts = posts.filter((p) => String(p.id) !== String(targetId));
 
         if (env.SAM_KV) {
           await env.SAM_KV.put("jewelry_sam_posts", JSON.stringify(posts));

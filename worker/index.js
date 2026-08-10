@@ -99,6 +99,41 @@ export default {
         return DEFAULT_JEWELRY_SAM_KB;
       }
 
+      // Send Telegram notification when customer requests live chat or sends message
+      async function sendTelegramNotification(chatData, env) {
+        let botToken = env.TELEGRAM_BOT_TOKEN;
+        let chatId = env.TELEGRAM_CHAT_ID;
+
+        if (env.SAM_KV && (!botToken || !chatId)) {
+          const cfg = await env.SAM_KV.get("jewelry_sam_telegram_cfg");
+          if (cfg) {
+            try {
+              const parsed = JSON.parse(cfg);
+              botToken = botToken || parsed.botToken;
+              chatId = chatId || parsed.chatId;
+            } catch(e) {}
+          }
+        }
+
+        if (!botToken || !chatId) return;
+
+        const text = `🔔 [주얼리 샘 1:1 고객 상담 요청]\n\n👤 고객: ${chatData.userId || '방문 고객'}\n💬 내용: ${chatData.text}\n⏰ 시간: ${chatData.time || new Date().toLocaleTimeString('ko-KR')}\n\n👉 관리자 센터: https://sam.lymin80.shop/admin.html`;
+
+        try {
+          await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: text,
+              parse_mode: 'HTML'
+            })
+          });
+        } catch(e) {
+          console.log('Telegram Alert Error:', e.message);
+        }
+      }
+
       // Pure 100% KV Database Fetch for Posts
       async function getKvPosts() {
         if (env.SAM_KV) {
@@ -114,8 +149,6 @@ export default {
         }
         return [];
       }
-
-      // 1. AI RAG Vector Chatbot API (POST /api/chat)
       if (url.pathname === "/api/chat" && request.method === "POST") {
         const { message } = await request.json();
         const userMsg = (message || "").toLowerCase().trim();
@@ -217,11 +250,42 @@ export default {
         }
         messages.push(chatData);
 
-        if (env.SAM_KV) {
-          await env.SAM_KV.put("jewelry_sam_live_chat", JSON.stringify(messages));
+        if (!chatData.isAdmin) {
+          ctx.waitUntil(sendTelegramNotification(chatData, env));
         }
 
         return new Response(JSON.stringify({ success: true, messages }), { headers: corsHeaders });
+      }
+
+      // 4-1. Telegram Notification Config API (GET/POST /api/telegram-config)
+      if (url.pathname === "/api/telegram-config" && request.method === "GET") {
+        let cfg = { botToken: env.TELEGRAM_BOT_TOKEN || "", chatId: env.TELEGRAM_CHAT_ID || "" };
+        if (env.SAM_KV) {
+          const stored = await env.SAM_KV.get("jewelry_sam_telegram_cfg");
+          if (stored) {
+            try { cfg = { ...cfg, ...JSON.parse(stored) }; } catch(e) {}
+          }
+        }
+        return new Response(JSON.stringify(cfg), { headers: corsHeaders });
+      }
+
+      if (url.pathname === "/api/telegram-config" && request.method === "POST") {
+        const { botToken, chatId, test } = await request.json();
+        const cfgObj = { botToken: botToken || "", chatId: chatId || "" };
+        
+        if (env.SAM_KV) {
+          await env.SAM_KV.put("jewelry_sam_telegram_cfg", JSON.stringify(cfgObj));
+        }
+
+        if (test) {
+          await sendTelegramNotification({
+            userId: '시스템 테스트',
+            text: '🎉 종로 주얼리 샘 텔레그램 알림 봇 연동에 성공했습니다!',
+            time: new Date().toLocaleTimeString('ko-KR')
+          }, env);
+        }
+
+        return new Response(JSON.stringify({ success: true, config: cfgObj }), { headers: corsHeaders });
       }
 
       // 5. Cloudflare R2 Upload (POST /api/upload)

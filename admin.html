@@ -502,6 +502,7 @@
       <button class="admin-tab-btn active" onclick="switchTab('posts-tab')">📝 블로그 글 관리</button>
       <button class="admin-tab-btn" onclick="switchTab('write-tab')">✏️ 새 글 작성하기</button>
       <button class="admin-tab-btn" onclick="switchTab('chat-tab')">💬 실시간 1:1 고객 상담 센터</button>
+      <button class="admin-tab-btn" onclick="switchTab('telegram-tab')">🔔 텔레그램 실시간 알림 연동</button>
       <button class="admin-tab-btn" onclick="switchTab('seo-tab')">🔍 네이버/구글 검색등록 (SEO)</button>
     </div>
 
@@ -665,6 +666,35 @@
           </table>
         </div>
         <button class="btn-submit" style="margin-top: 1.25rem; width: 100%; font-size: 1.05rem;" onclick="saveAdminKbData()">💾 AI Vector DB 지식 저장 및 챗봇 실시간 반영하기</button>
+      </div>
+    </div>
+
+    <!-- TAB: Telegram Notification Config -->
+    <div id="telegram-tab" class="admin-tab-content">
+      <div class="admin-card">
+        <div class="admin-card-title">🔔 텔레그램 실시간 알림 봇 연동 설정</div>
+        <p style="color: #9C9489; font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.5rem;">
+          고객이 메인 홈페이지에서 <strong>[실시간 1:1 상담원 연결]</strong>을 요청하거나 실시간 메세지를 입력할 때마다 사장님의 텔레그램으로 즉시 알림 메세지가 전송됩니다.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; max-width: 600px;">
+          <div class="form-group">
+            <label class="form-label" for="telegram-bot-token">텔레그램 봇 토큰 (Bot Token)</label>
+            <input type="text" id="telegram-bot-token" class="form-control" placeholder="예: 7123456789:AAE1234567890abcdefghijklmnopqrstuv" />
+            <small style="color:#9C9489; font-size:0.8rem; margin-top:0.3rem; display:block;">BotFather 에서 생성하신 봇 토큰을 입력해 주세요.</small>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="telegram-chat-id">텔레그램 채팅 ID (Chat ID)</label>
+            <input type="text" id="telegram-chat-id" class="form-control" placeholder="예: 123456789 또는 -100123456789" />
+            <small style="color:#9C9489; font-size:0.8rem; margin-top:0.3rem; display:block;">알림을 받으실 텔레그램 사용자 ID 또는 그룹 ID입니다.</small>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem;">
+            <button class="btn-submit" onclick="saveAdminTelegramConfig(false)">💾 텔레그램 알림 설정 저장하기</button>
+            <button class="btn-sm btn-edit" style="padding: 0.75rem 1.25rem;" onclick="saveAdminTelegramConfig(true)">🧪 설정 저장 & 테스트 알림 발송</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -864,11 +894,52 @@
       if (tabId === 'chat-tab') {
         startLiveChatPolling();
         fetchAdminKbData();
+      } else if (tabId === 'telegram-tab') {
+        fetchAdminTelegramConfig();
+        if (liveChatTimer) { clearInterval(liveChatTimer); liveChatTimer = null; }
       } else {
         if (liveChatTimer) {
           clearInterval(liveChatTimer);
           liveChatTimer = null;
         }
+      }
+    }
+
+    async function fetchAdminTelegramConfig() {
+      try {
+        const resp = await fetch(`${API_BASE}/api/telegram-config`);
+        if (resp.ok) {
+          const cfg = await resp.json();
+          document.getElementById('telegram-bot-token').value = cfg.botToken || '';
+          document.getElementById('telegram-chat-id').value = cfg.chatId || '';
+        }
+      } catch(e) {}
+    }
+
+    async function saveAdminTelegramConfig(sendTest = false) {
+      const botToken = document.getElementById('telegram-bot-token').value.trim();
+      const chatId = document.getElementById('telegram-chat-id').value.trim();
+
+      if (!botToken || !chatId) {
+        alert('텔레그램 봇 토큰과 채팅 ID를 모두 입력해 주세요.');
+        return;
+      }
+
+      try {
+        const resp = await fetch(`${API_BASE}/api/telegram-config`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ botToken, chatId, test: sendTest })
+        });
+        if (resp.ok) {
+          if (sendTest) {
+            alert('✨ 텔레그램 설정이 성공적으로 저장되었으며, 텔레그램 테스트 메시지를 발송했습니다!\n텔레그램 앱에서 🔔 [주얼리 샘 1:1 고객 상담 요청] 메시지가 왔는지 확인해 보세요.');
+          } else {
+            alert('✨ 텔레그램 실시간 알림 연동 설정이 성공적으로 저장되었습니다!');
+          }
+        }
+      } catch(e) {
+        alert('저장 중 오류가 발생했습니다: ' + e.message);
       }
     }
 

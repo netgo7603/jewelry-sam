@@ -418,6 +418,18 @@
         border-radius: 8px;
         border: 1px solid rgba(201, 169, 110, 0.15);
       }
+      .mobile-stack {
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+      }
+      .mobile-sessions-pane {
+        border-right: none !important;
+        border-bottom: 1px solid rgba(201,169,110,0.15) !important;
+        height: 180px !important;
+      }
+      .mobile-chat-pane {
+        height: 450px !important;
+      }
       .post-table th, .post-table td {
         padding: 0.6rem 0.5rem;
         font-size: 0.8rem;
@@ -579,9 +591,10 @@
 
     <!-- TAB 3: Live Chat & AI Chatbot Center -->
     <div id="chat-tab" class="admin-tab-content">
+      <!-- Section 1: 1:1 Live Chat Console -->
       <div class="admin-card">
         <div class="admin-card-title">
-          <span>💬 실시간 1:1 고객 상담 & AI 챗봇 모니터링 (Vector DB 연동)</span>
+          <span>💬 실시간 1:1 고객 상담 & AI 챗봇 모니터링</span>
           <span class="admin-badge" style="background: rgba(34, 197, 94, 0.15); color: #4ade80; border-color: rgba(34, 197, 94, 0.3);">● AI Vector DB 가동 중</span>
         </div>
         <p style="color: #9C9489; font-size: 0.85rem; margin-bottom: 1.5rem;">
@@ -589,22 +602,18 @@
         </p>
 
         <!-- Live Chat Console Grid -->
-        <div style="display: grid; grid-template-columns: 260px 1fr; gap: 1rem; background: #141110; border: 1px solid rgba(201,169,110,0.2); border-radius: 12px; height: 600px; max-height: 75vh; overflow: hidden;" class="mobile-stack">
+        <div style="display: grid; grid-template-columns: 280px 1fr; gap: 1rem; background: #141110; border: 1px solid rgba(201,169,110,0.2); border-radius: 12px; height: 560px; overflow: hidden;" class="mobile-stack">
           
           <!-- Left: User Session List -->
-          <div style="border-right: 1px solid rgba(201,169,110,0.15); padding: 1rem; overflow-y: auto; height: 100%;">
+          <div style="border-right: 1px solid rgba(201,169,110,0.15); padding: 1rem; overflow-y: auto; height: 100%;" class="mobile-sessions-pane">
             <div style="font-size: 0.85rem; font-weight: 600; color: #C9A96E; margin-bottom: 0.75rem;">📥 상담 대기열 / 최근 대화</div>
             <div id="admin-chat-sessions" style="overflow-y: auto; max-height: calc(100% - 30px);">
-              <div style="background: rgba(201,169,110,0.15); border: 1px solid #C9A96E; padding: 0.75rem; border-radius: 8px; margin-bottom: 0.5rem; cursor: pointer;">
-                <div style="font-weight: 600; font-size: 0.85rem; color: #F5F0E8;">👤 방문 고객 #1083</div>
-                <div style="font-size: 0.75rem; color: #9C9489; margin-top: 0.25rem;">"골드바 10돈 시세 문의..."</div>
-                <span style="font-size: 0.7rem; color: #4ade80;">● 실시간 상담 수신</span>
-              </div>
+              <!-- Session Cards rendered here -->
             </div>
           </div>
 
           <!-- Right: Real-Time Chat Room -->
-          <div style="display: flex; flex-direction: column; height: 100%; padding: 1rem; min-height: 0;">
+          <div style="display: flex; flex-direction: column; height: 100%; padding: 1rem; min-height: 0;" class="mobile-chat-pane">
             <div style="border-bottom: 1px solid rgba(201,169,110,0.15); padding-bottom: 0.75rem; font-weight: 600; color: #F5F0E8; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
               <span>💬 고객 1:1 상담실 — <strong style="color: #C9A96E;">상담원 모드</strong></span>
               <div style="display:flex; gap:0.5rem;">
@@ -613,7 +622,7 @@
               </div>
             </div>
 
-            <!-- Messages Window with Smooth Auto Scroll -->
+            <!-- Messages Window -->
             <div id="admin-chat-messages" style="flex: 1 1 auto; overflow-y: auto; margin: 1rem 0; padding-right: 0.5rem; display: flex; flex-direction: column; gap: 0.75rem; min-height: 0; scroll-behavior: smooth;">
               <!-- Dynamic Messages Rendered Here -->
             </div>
@@ -622,32 +631,37 @@
             <form onsubmit="handleAdminSendChatMessage(event)" style="display: flex; gap: 0.5rem; flex-shrink: 0;">
               <input type="text" id="admin-chat-input" class="form-input" placeholder="고객에게 보내실 1:1 실시간 메시지를 입력하세요..." required style="flex: 1;">
               <button type="submit" class="btn-submit" style="white-space: nowrap; padding: 0.75rem 1.25rem;">전송 ↵</button>
-        <!-- AI Vector KB Editor -->
-        <div style="margin-top: 2rem; border-top: 1px solid rgba(201,169,110,0.15); padding-top: 1.5rem;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;" class="mobile-stack">
-            <div style="font-weight: 600; font-size: 1.1rem; color: #F5F0E8;">🧠 AI 챗봇 Vector DB 지식베이스 실시간 관리</div>
-            <button class="btn-gen-xml" onclick="addNewKbRow()">➕ 지식 항목 추가</button>
+            </form>
           </div>
-          <p style="color: #9C9489; font-size: 0.85rem; margin-bottom: 1rem;">
-            고객이 챗봇에 물어볼 때 AI가 탐색하는 Vector 지식 데이터(키워드 및 자동 답변)입니다. 수정 후 아래 <strong>[💾 저장 및 반영하기]</strong>를 누르시면 실시간 챗봇에 즉시 적용됩니다.
-          </p>
-          <div class="table-wrapper">
-            <table class="post-table">
-              <thead>
-                <tr>
-                  <th style="width: 130px;">카테고리</th>
-                  <th style="width: 220px;">감지 키워드 (쉼표 구분)</th>
-                  <th>챗봇 자동 응답 답변 내용 (Markdown 지원)</th>
-                  <th style="width: 70px;">삭제</th>
-                </tr>
-              </thead>
-              <tbody id="admin-kb-list">
-                <!-- Dynamic KB rows render -->
-              </tbody>
-            </table>
-          </div>
-          <button class="btn-submit" style="margin-top: 1rem; width: 100%; font-size: 1.05rem;" onclick="saveAdminKbData()">💾 AI Vector DB 지식 저장 및 챗봇 실시간 반영하기</button>
+
         </div>
+      </div>
+
+      <!-- Section 2: AI Vector KB Manager Card -->
+      <div class="admin-card" style="margin-top: 1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div class="admin-card-title" style="margin-bottom: 0;">🧠 AI 챗봇 Vector DB 지식베이스 실시간 관리</div>
+          <button class="btn-gen-xml" onclick="addNewKbRow()">➕ 지식 항목 추가</button>
+        </div>
+        <p style="color: #9C9489; font-size: 0.85rem; margin-bottom: 1rem;">
+          고객이 챗봇에 물어볼 때 AI가 탐색하는 Vector 지식 데이터(키워드 및 자동 답변)입니다. 수정 후 아래 <strong>[💾 저장 및 반영하기]</strong>를 누르시면 실시간 챗봇에 즉시 적용됩니다.
+        </p>
+        <div class="table-wrapper" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+          <table class="post-table" style="min-width: 720px; width: 100%;">
+            <thead>
+              <tr>
+                <th style="width: 140px;">카테고리</th>
+                <th style="width: 240px;">감지 키워드 (쉼표 구분)</th>
+                <th>챗봇 자동 응답 답변 내용 (Markdown 지원)</th>
+                <th style="width: 70px;">삭제</th>
+              </tr>
+            </thead>
+            <tbody id="admin-kb-list">
+              <!-- Dynamic KB rows render -->
+            </tbody>
+          </table>
+        </div>
+        <button class="btn-submit" style="margin-top: 1.25rem; width: 100%; font-size: 1.05rem;" onclick="saveAdminKbData()">💾 AI Vector DB 지식 저장 및 챗봇 실시간 반영하기</button>
       </div>
     </div>
 

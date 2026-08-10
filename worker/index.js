@@ -159,12 +159,12 @@ export default {
           if (stored !== null && stored !== undefined) {
             try {
               const parsed = JSON.parse(stored);
-              if (Array.isArray(parsed)) {
+              if (Array.isArray(parsed) && parsed.length > 0) {
                 return parsed;
               }
             } catch(e) {}
           }
-          // Seed initial DB posts into KV if completely empty for the very first time
+          // Seed initial DB posts into KV if empty or null
           await env.SAM_KV.put("jewelry_sam_posts", JSON.stringify(SEED_POSTS));
           return SEED_POSTS;
         }
@@ -336,6 +336,11 @@ export default {
 
       // 6. GET Posts List (Pure KV DB 100%)
       if (url.pathname === "/api/posts" && request.method === "GET") {
+        const isReset = url.searchParams.get("reset");
+        if (isReset && env.SAM_KV) {
+          await env.SAM_KV.put("jewelry_sam_posts", JSON.stringify(SEED_POSTS));
+          return new Response(JSON.stringify(SEED_POSTS), { headers: corsHeaders });
+        }
         const posts = await getKvPosts();
         return new Response(JSON.stringify(posts), { headers: corsHeaders });
       }

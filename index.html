@@ -694,6 +694,19 @@
         console.log('KV DB Fetch Error');
       }
 
+      // Fallback auto-retry if API returned empty array
+      if (loadedPosts.length === 0) {
+        try {
+          const retryResp = await fetch(`${API_BASE}/api/posts?reset=1&t=` + Date.now());
+          if (retryResp.ok) {
+            const retryPosts = await retryResp.json();
+            if (Array.isArray(retryPosts) && retryPosts.length > 0) {
+              loadedPosts = retryPosts;
+            }
+          }
+        } catch(e) {}
+      }
+
       renderHomePageBlog();
     }
 

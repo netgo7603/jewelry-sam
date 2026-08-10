@@ -603,11 +603,22 @@
           <td><span style="color: #C9A96E; font-size: 0.8rem; background: rgba(201,169,110,0.1); padding: 0.2rem 0.6rem; border-radius: 4px;">${escapeHtml(post.category)}</span></td>
           <td>${post.date}</td>
           <td>
+            <a href="index.html?post=${post.id}" target="_blank" class="btn-sm btn-edit" style="text-decoration:none; display:inline-block;">👁️ 보기</a>
+            <button class="btn-sm btn-edit" onclick="copyPostLink(${post.id})">🔗 주소 복사</button>
             <button class="btn-sm btn-edit" onclick="editPost(${post.id})">수정</button>
             <button class="btn-sm btn-delete" onclick="deletePost(${post.id})">삭제</button>
           </td>
         `;
         tbody.appendChild(tr);
+      });
+    }
+
+    function copyPostLink(id) {
+      const shareUrl = `${window.location.origin}/index.html?post=${id}`;
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        alert('✨ 네이버/SNS 전용 블로그 포스트 주소가 복사되었습니다!\n\n이 주소로 들어오는 사용자는 접속하자마자 이 글 팝업이 자동으로 켜집니다:\n' + shareUrl);
+      }).catch(() => {
+        alert('포스트 주소: ' + shareUrl);
       });
     }
 

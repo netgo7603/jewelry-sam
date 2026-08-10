@@ -490,7 +490,10 @@
     <div class="blog-modal-content" onclick="event.stopPropagation()">
       <button class="blog-modal-close" onclick="closeBlogModal()">&times;</button>
       <div class="blog-modal-header">
-        <span class="blog-card-tag" id="modal-blog-category">카테고리</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <span class="blog-card-tag" id="modal-blog-category">카테고리</span>
+          <button type="button" class="price-link" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;" onclick="copyCurrentPostLink()">🔗 이 글 주소 복사</button>
+        </div>
         <h2 class="blog-modal-title" id="modal-blog-title">블로그 포스트 제목</h2>
         <div class="blog-card-meta" id="modal-blog-meta">작성자 · 날짜</div>
       </div>
@@ -751,10 +754,13 @@
       });
     }
 
+    let currentActivePostId = null;
+
     function openBlogModal(id) {
       const post = loadedPosts.find(p => p.id === id);
       if (!post) return;
 
+      currentActivePostId = id;
       document.getElementById('modal-blog-category').textContent = post.category;
       document.getElementById('modal-blog-title').textContent = post.title;
       document.getElementById('modal-blog-meta').textContent = `${post.author} · ${post.date}`;
@@ -764,6 +770,11 @@
       const modal = document.getElementById('blogModalBackdrop');
       modal.classList.add('open');
       document.body.style.overflow = 'hidden';
+
+      // Update URL hash for search engine deep linking
+      if (history.pushState) {
+        history.pushState(null, null, `?post=${id}`);
+      }
     }
 
     function closeBlogModal(e) {
@@ -773,6 +784,39 @@
       const modal = document.getElementById('blogModalBackdrop');
       modal.classList.remove('open');
       document.body.style.overflow = '';
+      currentActivePostId = null;
+
+      if (history.pushState) {
+        history.pushState(null, null, window.location.pathname);
+      }
+    }
+
+    function copyCurrentPostLink() {
+      if (!currentActivePostId) return;
+      const shareUrl = `${window.location.origin}${window.location.pathname}?post=${currentActivePostId}`;
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        alert('✨ 이 블로그 포스트의 바로가기 주소가 복사되었습니다!\n\n네이버나 블로그/SNS에 이 링크를 넣으시면 사용자가 클릭 시 바로 이 글 팝업창이 켜집니다:\n' + shareUrl);
+      }).catch(() => {
+        alert('주소: ' + shareUrl);
+      });
+    }
+
+    // Auto open modal if URL has ?post=ID or #blog-post-ID (Search engine deep link)
+    function checkUrlDeepLinkPost() {
+      const params = new URLSearchParams(window.location.search);
+      let postId = params.get('post');
+
+      if (!postId && window.location.hash) {
+        const hashMatch = window.location.hash.match(/#blog-post-(\d+)/);
+        if (hashMatch) postId = hashMatch[1];
+      }
+
+      if (postId) {
+        const targetId = parseInt(postId);
+        setTimeout(() => {
+          openBlogModal(targetId);
+        }, 300);
+      }
     }
 
     function escapeHtml(str) {
@@ -780,7 +824,9 @@
     }
 
     // Fetch and render blog
-    fetchHomePagePosts();
+    fetchHomePagePosts().then(() => {
+      checkUrlDeepLinkPost();
+    });
     window.addEventListener('storage', fetchHomePagePosts);
   </script>
 </body>

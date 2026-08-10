@@ -354,10 +354,14 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="post-image">대표 이미지 URL *</label>
-            <input type="text" id="post-image" class="form-input" value="images/gold_bar.png" required>
+            <label class="form-label" for="post-image">대표 이미지 선택 / URL *</label>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <input type="text" id="post-image" class="form-input" value="images/gold_bar.png" placeholder="이미지 주소 또는 아래 파일 선택" required>
+              <label for="post-file-input" class="btn-gen-xml" style="white-space: nowrap; cursor: pointer; display: inline-flex; align-items: center;">📁 내 PC에서 사진 찾기</label>
+              <input type="file" id="post-file-input" accept="image/*" style="display: none;" onchange="handleImageFileUpload(event)">
+            </div>
             <div class="preset-images">
-              <span style="font-size: 0.75rem; color: #9C9489; align-self: center;">이미지 선택:</span>
+              <span style="font-size: 0.75rem; color: #9C9489; align-self: center;">기본 프레임 프리셋:</span>
               <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/gold_bar.png')">골드바</button>
               <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/character_gold_bar.png')">캐릭터 골드바</button>
               <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/necklace.png')">목걸이</button>
@@ -430,86 +434,54 @@
   </div>
 
   <script>
-    // Default initial blog posts
-    const initialPosts = [
-      {
-        id: 1,
-        title: "[종로 주얼리] 24K 순금 골드바 선물 및 현명한 투자 노하우",
-        category: "골드바 투자",
-        author: "대표 이효진",
-        date: "2026-08-10",
-        image: "images/gold_bar.png",
-        excerpt: "순도 99.9% 순금 골드바를 구매할 때 반드시 확인해야 할 정품 인증서와 종로 주얼리 샘만의 차별화된 세공 보증 노하우를 공개합니다.",
-        content: `
-          <p>금은 대표적인 자산 보존 수단이자 소중한 분께 마음을 전하는 가장 가치 있는 선물입니다. 종로 주얼리 샘에서는 순도 99.9% 홀마크 감정원 인증 순금 골드바만을 엄선하여 제공합니다.</p>
-          <br>
-          <h4>골드바 구매 시 꼭 체크해야 할 3가지</h4>
-          <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
-            <li><strong>순도 99.9% 정품 보증서 발급 여부</strong>: 국가 공인 감정원의 각인이 찍혀 있는지 확인하세요.</li>
-            <li><strong>지급 보증 및 중량 정확성</strong>: 정확한 g(그램) 단위 중량 체크가 필수입니다.</li>
-            <li><strong>전문 상담과 신뢰도</strong>: 서울 종로구 종로 183 효성주얼리시티 1층 1083호 주얼리 샘 매장에서 1:1 맞춤 상담을 받으실 수 있습니다.</li>
-          </ol>
-        `
-      },
-      {
-        id: 2,
-        title: "[커플링 선택 가이드] 영원한 약속을 담은 종로 커플링 세트 추천",
-        category: "커플링 가이드",
-        author: "대표 이효진",
-        date: "2026-08-08",
-        image: "images/couple_ring_set.png",
-        excerpt: "서로의 손끝에서 빛나는 두 사람만의 커플링. 두께, 디자인, 이니셜 각인 서비스까지 세심하게 살펴드리는 맞춤 커플링 가이드입니다.",
-        content: `
-          <p>연인 및 부부의 소중한 기념일을 빛내줄 커플링 세트는 착용감과 디자인의 우아함이 가장 중요합니다.</p>
-          <br>
-          <p>주얼리 샘에서는 심플한 데일리 디자인부터 럭셔리한 인그레이빙 커플링까지 다양하게 구비하고 있으며, <strong>무료 이니셜 각인 서비스</strong>를 함께 제공해 드립니다.</p>
-        `
-      },
-      {
-        id: 3,
-        title: "[귀여운 순금 선물] 캐릭터 골드바 컬렉션 출시 및 선물 추천",
-        category: "주얼리 팁",
-        author: "대표 이효진",
-        date: "2026-08-05",
-        image: "images/character_gold_bar.png",
-        excerpt: "돌잔치 선물, 생일 선물, 기념일 선물로 큰 사랑을 받고 있는 주얼리 샘의 귀여운 십이지신 & 캐릭터 순금 골드바 시리즈를 소개합니다.",
-        content: `
-          <p>딱딱한 골드바 대신 한층 더 사랑스럽고 의미 있는 선물을 찾으신다면 주얼리 샘의 <strong>캐릭터 골드바 컬렉션</strong>을 추천합니다.</p>
-          <br>
-          <p>아기 돌반지 대체 선물이나 특별한 기념일 선물로 인기가 높으며, 99.9% 순금으로 제작되어 소장 가치와 미소까지 선사합니다.</p>
-        `
-      }
-    ];
+    let currentPosts = [];
 
-    // Load stored posts or fallback to initial
-    function getPosts() {
+    // Async load posts.json from server first
+    async function initAdminPosts() {
+      try {
+        const resp = await fetch('posts.json?v=' + Date.now());
+        if (resp.ok) {
+          currentPosts = await resp.json();
+        }
+      } catch (e) {
+        console.log('Failed to fetch posts.json');
+      }
+
+      // Check if session has edits
       const stored = localStorage.getItem('jewelry_sam_posts');
       if (stored) {
-        try { return JSON.parse(stored); } catch(e) {}
+        try {
+          const storedPosts = JSON.parse(stored);
+          if (storedPosts && storedPosts.length > 0) {
+            currentPosts = storedPosts;
+          }
+        } catch (e) {}
       }
-      localStorage.setItem('jewelry_sam_posts', JSON.stringify(initialPosts));
-      return initialPosts;
+
+      savePosts(currentPosts);
+      renderPostTable();
     }
 
     function savePosts(posts) {
+      currentPosts = posts;
       localStorage.setItem('jewelry_sam_posts', JSON.stringify(posts));
     }
 
     // Render Admin Post Table
     function renderPostTable() {
-      const posts = getPosts();
       const tbody = document.getElementById('admin-post-list');
+      if (!tbody) return;
       tbody.innerHTML = '';
 
-      if (posts.length === 0) {
+      if (currentPosts.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #6B6560; padding: 2rem;">등록된 글이 없습니다. 새 글을 작성해 주세요.</td></tr>`;
         return;
       }
 
-      posts.forEach((post, index) => {
+      currentPosts.forEach((post, index) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${posts.length - index}</td>
+          <td>${currentPosts.length - index}</td>
           <td style="font-weight: 600; color: #F5F0E8;">${escapeHtml(post.title)}</td>
           <td><span style="color: #C9A96E; font-size: 0.8rem; background: rgba(201,169,110,0.1); padding: 0.2rem 0.6rem; border-radius: 4px;">${escapeHtml(post.category)}</span></td>
           <td>${post.date}</td>
@@ -522,11 +494,30 @@
       });
     }
 
+    function handleImageFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('이미지 파일만 선택 가능합니다.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('post-image').value = e.target.result;
+        alert('사진이 성공적으로 변환/첨부되었습니다!');
+      };
+      reader.readAsDataURL(file);
+    }
+
     function switchTab(tabId) {
       document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.admin-tab-content').forEach(content => content.classList.remove('active'));
 
-      event.target.classList.add('active');
+      if (event && event.target && event.target.classList.contains('admin-tab-btn')) {
+        event.target.classList.add('active');
+      }
       document.getElementById(tabId).classList.add('active');
     }
 
@@ -544,15 +535,13 @@
       const excerpt = document.getElementById('post-excerpt').value.trim();
       const content = document.getElementById('post-content').value.trim();
 
-      let posts = getPosts();
-
       if (idInput) {
         // Edit existing post
         const postId = parseInt(idInput);
-        const postIndex = posts.findIndex(p => p.id === postId);
+        const postIndex = currentPosts.findIndex(p => p.id === postId);
         if (postIndex !== -1) {
-          posts[postIndex] = {
-            ...posts[postIndex],
+          currentPosts[postIndex] = {
+            ...currentPosts[postIndex],
             title, category, author, image, excerpt, content
           };
           alert('포스트가 수정되었습니다!');
@@ -570,19 +559,19 @@
           excerpt,
           content
         };
-        posts.unshift(newPost); // Add at top
-        alert('새 블로그 포스트가 발행되었습니다! 메인 홈페이지에 즉시 노출됩니다.');
+        currentPosts.unshift(newPost); // Add at top
+        alert('새 블로그 포스트가 작성되었습니다!');
       }
 
-      savePosts(posts);
+      savePosts(currentPosts);
       resetForm();
       renderPostTable();
       switchTab('posts-tab');
+      downloadPostsJsonPrompt();
     }
 
     function editPost(id) {
-      const posts = getPosts();
-      const post = posts.find(p => p.id === id);
+      const post = currentPosts.find(p => p.id === id);
       if (!post) return;
 
       document.getElementById('edit-post-id').value = post.id;
@@ -596,8 +585,7 @@
       document.getElementById('form-title-text').textContent = '블로그 포스트 수정';
       document.getElementById('btn-submit-post').textContent = '포스트 수정 완료';
 
-      // Switch to write tab
-      document.querySelectorAll('.admin-tab-btn')[1].click();
+      switchTab('write-tab');
     }
 
     function cancelEdit() {
@@ -617,10 +605,21 @@
     function deletePost(id) {
       if (!confirm('이 블로그 포스트를 삭제하시겠습니까?')) return;
 
-      let posts = getPosts();
-      posts = posts.filter(p => p.id !== id);
-      savePosts(posts);
+      currentPosts = currentPosts.filter(p => p.id !== id);
+      savePosts(currentPosts);
       renderPostTable();
+      downloadPostsJsonPrompt();
+    }
+
+    function downloadPostsJsonPrompt() {
+      if (confirm('💡 변경된 글 목록을 posts.json 파일로 저장/다운로드 하시겠습니까?\n(다운로드한 posts.json을 프로젝트 폴더에 저장/푸시하면 서버에 영구 반영됩니다.)')) {
+        downloadPostsJson();
+      }
+    }
+
+    function downloadPostsJson() {
+      const dataStr = JSON.stringify(currentPosts, null, 2);
+      downloadFile('posts.json', dataStr, 'application/json');
     }
 
     function escapeHtml(str) {
@@ -629,11 +628,10 @@
 
     // Download sitemap.xml
     function downloadSitemap() {
-      const posts = getPosts();
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
       xml += `  <url>\n    <loc>https://jewelrysam.kr/</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
       
-      posts.forEach(post => {
+      currentPosts.forEach(post => {
         xml += `  <url>\n    <loc>https://jewelrysam.kr/#blog-post-${post.id}</loc>\n    <lastmod>${post.date}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
       });
 
@@ -644,11 +642,10 @@
 
     // Download rss.xml
     function downloadRss() {
-      const posts = getPosts();
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n`;
       xml += `    <title>주얼리 샘 블로그 | Jewelry SAM</title>\n    <link>https://jewelrysam.kr</link>\n    <description>종로 프리미엄 주얼리 샘의 공식 블로그 - 골드바, 귀걸이, 목걸이, 팔찌, 커플링 소식</description>\n`;
 
-      posts.forEach(post => {
+      currentPosts.forEach(post => {
         xml += `    <item>\n`;
         xml += `      <title><![CDATA[${post.title}]]></title>\n`;
         xml += `      <link>https://jewelrysam.kr/#blog-post-${post.id}</link>\n`;
@@ -672,8 +669,8 @@
       document.body.removeChild(element);
     }
 
-    // Initial load
-    renderPostTable();
+    // Initialize
+    initAdminPosts();
   </script>
 </body>
 </html>

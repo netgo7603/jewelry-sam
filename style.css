@@ -1507,8 +1507,10 @@ img {
 }
 
 /* ========================================
-   Chatbot Widget Override (if needed)
+   Chatbot Widget Override
    ======================================== */
+#documind-widget-root,
 #documind-chat-widget {
-  z-index: 9999 !important;
+  position: relative;
+  z-index: 999999 !important;
 }

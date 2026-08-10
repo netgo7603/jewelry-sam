@@ -6,6 +6,11 @@
   <title>주얼리 샘 | 블로그 & SEO 관리자 시스템</title>
   <link rel="icon" type="image/png" href="images/favicon.png">
   <link rel="stylesheet" href="style.css">
+
+  <!-- Quill WYSIWYG Rich Text Editor -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
   <style>
     /* Admin Dashboard Custom Styles */
     body {
@@ -14,6 +19,28 @@
       font-family: 'Noto Sans KR', sans-serif;
       padding-bottom: 4rem;
     }
+
+    /* Quill Editor Dark Luxury Styling */
+    .ql-toolbar.ql-snow {
+      background: #141110 !important;
+      border-color: rgba(201, 169, 110, 0.3) !important;
+      border-radius: 8px 8px 0 0;
+    }
+    .ql-container.ql-snow {
+      background: #0C0A08 !important;
+      border-color: rgba(201, 169, 110, 0.3) !important;
+      border-radius: 0 0 8px 8px;
+      color: #F5F0E8 !important;
+      font-size: 1rem !important;
+      min-height: 260px;
+    }
+    .ql-editor {
+      min-height: 260px;
+      line-height: 1.8;
+    }
+    .ql-snow .ql-stroke { stroke: #C9A96E !important; }
+    .ql-snow .ql-fill { fill: #C9A96E !important; }
+    .ql-snow .ql-picker { color: #C9A96E !important; }
 
     .admin-header {
       background: #141110;
@@ -409,20 +436,15 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="post-image">대표 이미지 선택 / URL *</label>
+            <label class="form-label" for="post-image">대표 이미지 (Cloudflare R2 자동 저장) *</label>
             <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-              <input type="text" id="post-image" class="form-input" value="images/gold_bar.png" placeholder="이미지 주소 또는 아래 파일 선택" required>
-              <label for="post-file-input" class="btn-gen-xml" style="white-space: nowrap; cursor: pointer; display: inline-flex; align-items: center;">📁 내 PC에서 사진 찾기</label>
-              <input type="file" id="post-file-input" accept="image/*" style="display: none;" onchange="handleImageFileUpload(event)">
+              <input type="text" id="post-image" class="form-input" value="images/gold_bar.png" placeholder="R2 이미지 URL 또는 사진 파일 선택" required>
+              <label for="post-file-input" class="btn-gen-xml" style="white-space: nowrap; cursor: pointer; display: inline-flex; align-items: center; background: rgba(201,169,110,0.15);">☁️ Cloudflare R2에 사진 업로드</label>
+              <input type="file" id="post-file-input" accept="image/*" style="display: none;" onchange="uploadToCloudflareR2(event)">
             </div>
-            <div class="preset-images">
-              <span style="font-size: 0.75rem; color: #9C9489; align-self: center;">기본 프레임 프리셋:</span>
-              <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/gold_bar.png')">골드바</button>
-              <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/character_gold_bar.png')">캐릭터 골드바</button>
-              <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/necklace.png')">목걸이</button>
-              <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/couple_ring_set.png')">커플링</button>
-              <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/earrings.png')">귀걸이</button>
-              <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/hero.png')">매장 전경</button>
+            <div id="image-preview-container" style="margin-top: 0.5rem; display: none;">
+              <span style="font-size: 0.75rem; color: #9C9489; display: block; margin-bottom: 0.25rem;">업로드 이미지 미리보기:</span>
+              <img id="image-preview-img" src="" alt="미리보기" style="max-height: 120px; border-radius: 8px; border: 1px solid rgba(201,169,110,0.3);">
             </div>
           </div>
 
@@ -432,8 +454,8 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="post-content">본문 내용 *</label>
-            <textarea id="post-content" class="form-textarea" placeholder="글 내용을 입력하세요. 줄바꿈이나 HTML 태그(<p>, <b> 등) 사용 가능합니다." required></textarea>
+            <label class="form-label">본문 내용 (WYSIWYG 리치 에디터) *</label>
+            <div id="editor-container"></div>
           </div>
 
           <div style="display: flex; gap: 1rem; margin-top: 2rem;">
@@ -490,7 +512,25 @@
 
   <script>
     let currentPosts = [];
+    let quillEditor = null;
     const API_BASE = 'https://documind-backend.lymin80.workers.dev'; // Cloudflare Worker API Host
+
+    // Initialize Quill Editor
+    document.addEventListener('DOMContentLoaded', () => {
+      quillEditor = new Quill('#editor-container', {
+        theme: 'snow',
+        placeholder: '블로그 본문 내용을 여기에 자유롭게 작성하세요. (워드/한글처럼 굵게, 제목 크기, 글머리 기호, 링크, 이미지 삽입 등이 지원됩니다)',
+        modules: {
+          toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['link', 'image'],
+            ['clean']
+          ]
+        }
+      });
+    });
 
     // Async load posts from DB API / posts.json
     async function initAdminPosts() {
@@ -535,8 +575,8 @@
       localStorage.setItem('jewelry_sam_posts', JSON.stringify(posts));
     }
 
-    // Cloudflare R2 Upload Handler
-    async function handleImageFileUpload(event) {
+    // Pure Cloudflare R2 Upload Handler
+    async function uploadToCloudflareR2(event) {
       const file = event.target.files[0];
       if (!file) return;
 
@@ -546,7 +586,9 @@
       }
 
       const imgInput = document.getElementById('post-image');
-      const originalValue = imgInput.value;
+      const previewContainer = document.getElementById('image-preview-container');
+      const previewImg = document.getElementById('image-preview-img');
+
       imgInput.value = '☁️ Cloudflare R2에 업로드 중...';
 
       const formData = new FormData();
@@ -562,19 +604,23 @@
           const data = await resp.json();
           if (data.success && data.url) {
             imgInput.value = data.url;
-            alert('✨ 이미지 Cloudflare R2 업로드 완료!\nURL: ' + data.url);
+            previewImg.src = data.url;
+            previewContainer.style.display = 'block';
+            alert('✨ 이미지 Cloudflare R2 업로드 완료!\nR2 URL: ' + data.url);
             return;
           }
         }
       } catch (e) {
-        console.log('R2 Upload API Error, fallback to DataURL');
+        console.log('R2 Upload API Error');
       }
 
-      // Fallback to FileReader DataURL
+      // If R2 server is offline during dev, use DataURL preview
       const reader = new FileReader();
       reader.onload = function(e) {
         imgInput.value = e.target.result;
-        alert('사진이 파일 변환 첨부되었습니다.');
+        previewImg.src = e.target.result;
+        previewContainer.style.display = 'block';
+        alert('사진이 첨부되었습니다.');
       };
       reader.readAsDataURL(file);
     }
@@ -586,7 +632,7 @@
       tbody.innerHTML = '';
 
       if (currentPosts.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #6B6560; padding: 2rem;">등록된 글이 없습니다. 새 글을 작성해 주세요.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #6B6560; padding: 2rem;">등록된 글이 없습니다. 새 글을 작성해 주세요.</td></tr>`;
         return;
       }
 
@@ -628,10 +674,6 @@
       document.getElementById(tabId).classList.add('active');
     }
 
-    function selectPresetImg(url) {
-      document.getElementById('post-image').value = url;
-    }
-
     async function handlePostSubmit(e) {
       e.preventDefault();
       const idInput = document.getElementById('edit-post-id').value;
@@ -639,7 +681,12 @@
       const category = document.getElementById('post-category').value;
       const image = document.getElementById('post-image').value.trim();
       const excerpt = document.getElementById('post-excerpt').value.trim();
-      const content = document.getElementById('post-content').value.trim();
+      const content = quillEditor ? quillEditor.root.innerHTML : '';
+
+      if (!content || content === '<p><br></p>') {
+        alert('본문 내용을 입력해 주세요.');
+        return;
+      }
 
       const postObj = {
         id: idInput ? parseInt(idInput) : Date.now(),
@@ -667,11 +714,11 @@
         const postIndex = currentPosts.findIndex(p => p.id === postObj.id);
         if (postIndex !== -1) {
           currentPosts[postIndex] = postObj;
-          alert('포스트가 수정되었습니다!');
+          alert('포스트가 성공적으로 수정되었습니다!');
         }
       } else {
         currentPosts.unshift(postObj);
-        alert('새 블로그 포스트가 DB에 작성되었습니다!');
+        alert('새 블로그 포스트가 Cloudflare DB에 작성되었습니다!');
       }
 
       savePosts(currentPosts);
@@ -689,7 +736,17 @@
       document.getElementById('post-category').value = post.category;
       document.getElementById('post-image').value = post.image;
       document.getElementById('post-excerpt').value = post.excerpt;
-      document.getElementById('post-content').value = post.content;
+      
+      if (quillEditor) {
+        quillEditor.root.innerHTML = post.content || '';
+      }
+
+      if (post.image) {
+        const previewContainer = document.getElementById('image-preview-container');
+        const previewImg = document.getElementById('image-preview-img');
+        previewImg.src = post.image;
+        previewContainer.style.display = 'block';
+      }
 
       document.getElementById('form-title-text').textContent = '블로그 포스트 수정';
       document.getElementById('btn-submit-post').textContent = '포스트 수정 완료';
@@ -708,6 +765,11 @@
       document.getElementById('form-title-text').textContent = '새 블로그 포스트 작성';
       document.getElementById('btn-submit-post').textContent = '포스트 발행하기';
       document.getElementById('post-image').value = 'images/gold_bar.png';
+      document.getElementById('image-preview-container').style.display = 'none';
+
+      if (quillEditor) {
+        quillEditor.root.innerHTML = '';
+      }
     }
 
     async function deletePost(id) {

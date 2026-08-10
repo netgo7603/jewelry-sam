@@ -1,0 +1,16 @@
+name = "jewelry-sam-api"
+main = "worker/index.js"
+compatibility_date = "2024-01-01"
+
+# Cloudflare R2 Bucket Binding for Image Storage
+[[r2_buckets]]
+binding = "SAM_R2_BUCKET"
+bucket_name = "jewelry-sam-images"
+
+# Cloudflare KV Binding for Database Storage
+[[kv_namespaces]]
+binding = "SAM_KV"
+id = "jewelry_sam_kv_id"
+
+[vars]
+R2_PUBLIC_DOMAIN = "https://documind-backend.lymin80.workers.dev/r2"

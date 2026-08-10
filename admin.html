@@ -495,16 +495,29 @@
 
   <script>
     let currentPosts = [];
+    const API_BASE = 'https://documind-backend.lymin80.workers.dev'; // Cloudflare Worker API Host
 
-    // Async load posts.json from server first
+    // Async load posts from DB API / posts.json
     async function initAdminPosts() {
       try {
-        const resp = await fetch('posts.json?v=' + Date.now());
+        const resp = await fetch(`${API_BASE}/api/posts`);
         if (resp.ok) {
-          currentPosts = await resp.json();
+          const apiPosts = await resp.json();
+          if (Array.isArray(apiPosts) && apiPosts.length > 0) {
+            currentPosts = apiPosts;
+          }
         }
       } catch (e) {
-        console.log('Failed to fetch posts.json');
+        console.log('API fetch failed, trying local fallback');
+      }
+
+      if (currentPosts.length === 0) {
+        try {
+          const fileResp = await fetch('posts.json?v=' + Date.now());
+          if (fileResp.ok) {
+            currentPosts = await fileResp.json();
+          }
+        } catch (e) {}
       }
 
       // Check if session has edits
@@ -525,6 +538,50 @@
     function savePosts(posts) {
       currentPosts = posts;
       localStorage.setItem('jewelry_sam_posts', JSON.stringify(posts));
+    }
+
+    // Cloudflare R2 Upload Handler
+    async function handleImageFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('이미지 파일만 선택 가능합니다.');
+        return;
+      }
+
+      const imgInput = document.getElementById('post-image');
+      const originalValue = imgInput.value;
+      imgInput.value = '☁️ Cloudflare R2에 업로드 중...';
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const resp = await fetch(`${API_BASE}/api/upload`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.success && data.url) {
+            imgInput.value = data.url;
+            alert('✨ 이미지 Cloudflare R2 업로드 완료!\nURL: ' + data.url);
+            return;
+          }
+        }
+      } catch (e) {
+        console.log('R2 Upload API Error, fallback to DataURL');
+      }
+
+      // Fallback to FileReader DataURL
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        imgInput.value = e.target.result;
+        alert('사진이 파일 변환 첨부되었습니다.');
+      };
+      reader.readAsDataURL(file);
     }
 
     // Render Admin Post Table
@@ -554,23 +611,6 @@
       });
     }
 
-    function handleImageFileUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      if (!file.type.startsWith('image/')) {
-        alert('이미지 파일만 선택 가능합니다.');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('post-image').value = e.target.result;
-        alert('사진이 성공적으로 변환/첨부되었습니다!');
-      };
-      reader.readAsDataURL(file);
-    }
-
     function switchTab(tabId) {
       document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.admin-tab-content').forEach(content => content.classList.remove('active'));
@@ -585,7 +625,7 @@
       document.getElementById('post-image').value = url;
     }
 
-    function handlePostSubmit(e) {
+    async function handlePostSubmit(e) {
       e.preventDefault();
       const idInput = document.getElementById('edit-post-id').value;
       const title = document.getElementById('post-title').value.trim();
@@ -595,32 +635,37 @@
       const excerpt = document.getElementById('post-excerpt').value.trim();
       const content = document.getElementById('post-content').value.trim();
 
+      const postObj = {
+        id: idInput ? parseInt(idInput) : Date.now(),
+        title,
+        category,
+        author,
+        date: new Date().toISOString().split('T')[0],
+        image,
+        excerpt,
+        content
+      };
+
+      // Sync with Workers DB API
+      try {
+        await fetch(`${API_BASE}/api/posts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(postObj)
+        });
+      } catch(err) {
+        console.log('Worker DB API sync error');
+      }
+
       if (idInput) {
-        // Edit existing post
-        const postId = parseInt(idInput);
-        const postIndex = currentPosts.findIndex(p => p.id === postId);
+        const postIndex = currentPosts.findIndex(p => p.id === postObj.id);
         if (postIndex !== -1) {
-          currentPosts[postIndex] = {
-            ...currentPosts[postIndex],
-            title, category, author, image, excerpt, content
-          };
+          currentPosts[postIndex] = postObj;
           alert('포스트가 수정되었습니다!');
         }
       } else {
-        // Add new post
-        const today = new Date().toISOString().split('T')[0];
-        const newPost = {
-          id: Date.now(),
-          title,
-          category,
-          author,
-          date: today,
-          image,
-          excerpt,
-          content
-        };
-        currentPosts.unshift(newPost); // Add at top
-        alert('새 블로그 포스트가 작성되었습니다!');
+        currentPosts.unshift(postObj);
+        alert('새 블로그 포스트가 DB에 작성되었습니다!');
       }
 
       savePosts(currentPosts);
@@ -662,8 +707,12 @@
       document.getElementById('post-image').value = 'images/gold_bar.png';
     }
 
-    function deletePost(id) {
+    async function deletePost(id) {
       if (!confirm('이 블로그 포스트를 삭제하시겠습니까?')) return;
+
+      try {
+        await fetch(`${API_BASE}/api/posts/${id}`, { method: 'DELETE' });
+      } catch(e) {}
 
       currentPosts = currentPosts.filter(p => p.id !== id);
       savePosts(currentPosts);

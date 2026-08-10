@@ -674,15 +674,30 @@
     // Blog Rendering & Modal Manager
     // ==========================================
     let loadedPosts = [];
+    const API_BASE = 'https://documind-backend.lymin80.workers.dev';
 
     async function fetchHomePagePosts() {
       try {
-        const resp = await fetch('posts.json?v=' + Date.now());
-        if (resp.ok) {
-          loadedPosts = await resp.json();
+        const apiResp = await fetch(`${API_BASE}/api/posts`);
+        if (apiResp.ok) {
+          const apiPosts = await apiResp.json();
+          if (Array.isArray(apiPosts) && apiPosts.length > 0) {
+            loadedPosts = apiPosts;
+          }
         }
       } catch (e) {
-        console.log('Failed to fetch posts.json');
+        console.log('API fetch failed, fallback to posts.json');
+      }
+
+      if (loadedPosts.length === 0) {
+        try {
+          const resp = await fetch('posts.json?v=' + Date.now());
+          if (resp.ok) {
+            loadedPosts = await resp.json();
+          }
+        } catch (e) {
+          console.log('Failed to fetch posts.json');
+        }
       }
 
       // Check if localStorage has active session edits

@@ -1,8 +1,9 @@
 /**
  * Cloudflare Worker API & AI RAG Multi-Session Live Chat Engine for Jewelry SAM
+ * Pure 100% Cloudflare KV Database Mode (No local JSON caches)
  */
 
-const DEFAULT_POSTS = [
+const SEED_POSTS = [
   {
     id: 1,
     title: "[종로 주얼리] 24K 순금 골드바 선물 및 현명한 투자 노하우",
@@ -78,7 +79,7 @@ const DEFAULT_JEWELRY_SAM_KB = [
     id: 4,
     category: "시세",
     keywords: ["시세", "금시세", "오늘", "가격", "18k", "14k", "24k", "순금"],
-    answer: "💵 **금 시세 안내**\n금 시세는 당일 국내외 시세 변동에 따라 매일 바뀝니다.\n실시간 정확한 24K 순금 / 18K / 14K 매입 및 판매 시세는 대표 전화 **010-7448-7478**로 문의하시면 바로 안내해 드립니다."
+    answer: "💵 **금 시세 안내**\n금 시세는 당일 국내외 시세 변동에 따라 매일 바겁니다.\n실시간 정확한 24K 순금 / 18K / 14K 매입 및 판매 시세는 대표 전화 **010-7448-7478**로 문의하시면 바로 안내해 드립니다."
   },
   {
     id: 5,
@@ -151,16 +152,19 @@ export default {
         return DEFAULT_JEWELRY_SAM_KB;
       }
 
-      async function getActivePosts() {
-        let posts = [];
+      // Pure 100% KV Database Fetch for Posts
+      async function getKvPosts() {
         if (env.SAM_KV) {
           const stored = await env.SAM_KV.get("jewelry_sam_posts");
-          if (stored) posts = JSON.parse(stored);
+          if (stored) {
+            return JSON.parse(stored);
+          } else {
+            // Seed initial DB posts into KV if completely empty for the very first time
+            await env.SAM_KV.put("jewelry_sam_posts", JSON.stringify(SEED_POSTS));
+            return SEED_POSTS;
+          }
         }
-        if (!posts || posts.length === 0) {
-          posts = DEFAULT_POSTS;
-        }
-        return posts;
+        return SEED_POSTS;
       }
 
       // 1. AI RAG Vector Chatbot API (POST /api/chat)
@@ -326,16 +330,16 @@ export default {
         return new Response("File not found", { status: 404 });
       }
 
-      // 6. GET Posts List (GET /api/posts)
+      // 6. GET Posts List (Pure KV DB 100%)
       if (url.pathname === "/api/posts" && request.method === "GET") {
-        const posts = await getActivePosts();
+        const posts = await getKvPosts();
         return new Response(JSON.stringify(posts), { headers: corsHeaders });
       }
 
-      // 7. Save / Update Posts (POST /api/posts)
+      // 7. Save / Update Posts (Pure KV DB 100%)
       if (url.pathname === "/api/posts" && request.method === "POST") {
         const postData = await request.json();
-        let posts = await getActivePosts();
+        let posts = await getKvPosts();
 
         if (postData.id) {
           const idx = posts.findIndex((p) => p.id === postData.id);
@@ -359,10 +363,10 @@ export default {
         );
       }
 
-      // 8. Delete Post (DELETE /api/posts/:id)
+      // 8. Delete Post (Pure KV DB 100%)
       if (url.pathname.startsWith("/api/posts/") && request.method === "DELETE") {
         const id = parseInt(url.pathname.replace("/api/posts/", ""));
-        let posts = await getActivePosts();
+        let posts = await getKvPosts();
         posts = posts.filter((p) => p.id !== id);
 
         if (env.SAM_KV) {
@@ -374,7 +378,7 @@ export default {
         });
       }
 
-      return new Response(JSON.stringify({ message: "Jewelry SAM API Server" }), {
+      return new Response(JSON.stringify({ message: "Jewelry SAM API Server (Pure KV DB)" }), {
         headers: corsHeaders,
       });
     } catch (err) {

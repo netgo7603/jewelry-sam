@@ -734,7 +734,7 @@
     // Async load posts from DB API / posts.json
     async function initAdminPosts() {
       try {
-        const resp = await fetch(`${API_BASE}/api/posts`);
+        const resp = await fetch(`${API_BASE}/api/posts?t=` + Date.now());
         if (resp.ok) {
           const apiPosts = await resp.json();
           if (Array.isArray(apiPosts) && apiPosts.length > 0) {
@@ -742,16 +742,7 @@
           }
         }
       } catch (e) {
-        console.log('API fetch failed, trying local fallback');
-      }
-
-      if (currentPosts.length === 0) {
-        try {
-          const fileResp = await fetch('posts.json?v=' + Date.now());
-          if (fileResp.ok) {
-            currentPosts = await fileResp.json();
-          }
-        } catch (e) {}
+        console.log('KV DB Fetch Error');
       }
 
       renderPostTable();

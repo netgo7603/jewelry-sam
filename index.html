@@ -691,18 +691,7 @@
           }
         }
       } catch (e) {
-        console.log('API fetch failed, fallback to posts.json');
-      }
-
-      if (loadedPosts.length === 0) {
-        try {
-          const resp = await fetch('posts.json?v=' + Date.now());
-          if (resp.ok) {
-            loadedPosts = await resp.json();
-          }
-        } catch (e) {
-          console.log('Failed to fetch posts.json');
-        }
+        console.log('KV DB Fetch Error');
       }
 
       renderHomePageBlog();

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주얼리 샘 | 블로그 & SEO 관리자 시스템</title>
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Admin Dashboard Custom Styles */
+    body {
+      background-color: #0c0a08;
+      color: #f5f0e8;
+      font-family: 'Noto Sans KR', sans-serif;
+      padding-bottom: 4rem;
+    }
+
+    .admin-header {
+      background: #141110;
+      border-bottom: 1px solid rgba(201, 169, 110, 0.2);
+      padding: 1.25rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .admin-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: #F5F0E8;
+    }
+
+    .admin-logo img {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+    }
+
+    .admin-badge {
+      padding: 0.25rem 0.75rem;
+      background: rgba(201, 169, 110, 0.15);
+      border: 1px solid rgba(201, 169, 110, 0.3);
+      border-radius: 100px;
+      font-size: 0.75rem;
+      color: #C9A96E;
+      font-weight: 600;
+    }
+
+    .admin-container {
+      max-width: 1200px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .admin-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid rgba(201, 169, 110, 0.2);
+      padding-bottom: 0.5rem;
+    }
+
+    .admin-tab-btn {
+      background: transparent;
+      border: none;
+      color: #9C9489;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 0.75rem 1.25rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .admin-tab-btn.active {
+      background: rgba(201, 169, 110, 0.15);
+      color: #C9A96E;
+      font-weight: 600;
+    }
+
+    .admin-tab-content {
+      display: none;
+    }
+
+    .admin-tab-content.active {
+      display: block;
+    }
+
+    .admin-card {
+      background: #1A1614;
+      border: 1px solid rgba(201, 169, 110, 0.15);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .admin-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: #F5F0E8;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #C9A96E;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 0.85rem 1.1rem;
+      background: #0C0A08;
+      border: 1px solid rgba(201, 169, 110, 0.2);
+      border-radius: 8px;
+      color: #F5F0E8;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.3s ease;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: #C9A96E;
+    }
+
+    .form-textarea {
+      min-height: 180px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    .preset-images {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .preset-img-btn {
+      background: #141110;
+      border: 1px solid rgba(201, 169, 110, 0.2);
+      color: #9C9489;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .preset-img-btn:hover {
+      background: rgba(201, 169, 110, 0.15);
+      color: #C9A96E;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, #C9A96E, #A88B52);
+      color: #0C0A08;
+      border: none;
+      padding: 0.9rem 2rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+    }
+
+    .post-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .post-table th, .post-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(201, 169, 110, 0.1);
+    }
+
+    .post-table th {
+      color: #C9A96E;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .post-table td {
+      font-size: 0.9rem;
+      color: #9C9489;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.75rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-edit {
+      background: rgba(201, 169, 110, 0.2);
+      color: #C9A96E;
+    }
+
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .seo-box {
+      background: #141110;
+      border: 1px solid rgba(201, 169, 110, 0.2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .seo-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #C9A96E;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .seo-desc {
+      font-size: 0.88rem;
+      color: #9C9489;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .btn-gen-xml {
+      background: transparent;
+      border: 1px solid #C9A96E;
+      color: #C9A96E;
+      padding: 0.6rem 1.25rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-gen-xml:hover {
+      background: rgba(201, 169, 110, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Header -->
+  <header class="admin-header">
+    <div class="container admin-nav">
+      <a href="index.html" class="admin-logo">
+        <img src="images/favicon.png" alt="주얼리 샘 로고">
+        주얼리 샘 관리자 센터
+      </a>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <span class="admin-badge">Blog & SEO System</span>
+        <a href="index.html" target="_blank" class="btn-gen-xml">홈페이지 바로가기 ↗</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="admin-container">
+    <!-- Admin Nav Tabs -->
+    <div class="admin-tabs">
+      <button class="admin-tab-btn active" onclick="switchTab('posts-tab')">📝 블로그 글 관리</button>
+      <button class="admin-tab-btn" onclick="switchTab('write-tab')">✏️ 새 글 작성하기</button>
+      <button class="admin-tab-btn" onclick="switchTab('seo-tab')">🔍 네이버/구글 검색등록 (SEO)</button>
+    </div>
+
+    <!-- TAB 1: Posts List -->
+    <div id="posts-tab" class="admin-tab-content active">
+      <div class="admin-card">
+        <div class="admin-card-title">
+          <span>등록된 블로그 포스트 목록</span>
+          <button class="btn-submit" onclick="switchTab('write-tab')">+ 새 포스트 추가</button>
+        </div>
+        <p style="color: #9C9489; font-size: 0.85rem; margin-bottom: 1.5rem;">
+          이곳에 등록된 글은 메인 홈페이지의 [블로그] 섹션에 즉시 노출되며, 검색엔진(네이버, 구글)에 수집됩니다.
+        </p>
+
+        <table class="post-table">
+          <thead>
+            <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th>카테고리</th>
+              <th>작성일</th>
+              <th>관리</th>
+            </tr>
+          </thead>
+          <tbody id="admin-post-list">
+            <!-- Dynamic Posts render -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 2: Write/Edit Post -->
+    <div id="write-tab" class="admin-tab-content">
+      <div class="admin-card">
+        <div class="admin-card-title" id="form-title-text">새 블로그 포스트 작성</div>
+        <form id="post-form" onsubmit="handlePostSubmit(event)">
+          <input type="hidden" id="edit-post-id" value="">
+
+          <div class="form-group">
+            <label class="form-label" for="post-title">포스트 제목 *</label>
+            <input type="text" id="post-title" class="form-input" placeholder="예: [종로 골드바] 24K 순금 골드바 현명하게 선택하는 법" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label" for="post-category">카테고리 *</label>
+              <select id="post-category" class="form-select">
+                <option value="골드바 투자">골드바 투자</option>
+                <option value="주얼리 팁">주얼리 팁</option>
+                <option value="커플링 가이드">커플링 가이드</option>
+                <option value="매장 소식">매장 소식</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="post-author">작성자 *</label>
+              <input type="text" id="post-author" class="form-input" value="대표 이효진" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="post-image">대표 이미지 URL *</label>
+            <input type="text" id="post-image" class="form-input" value="images/gold_bar.png" required>
+            <div class="preset-images">
+              <span style="font-size: 0.75rem; color: #9C9489; align-self: center;">이미지 선택:</span>
+              <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/gold_bar.png')">골드바</button>
+              <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/character_gold_bar.png')">캐릭터 골드바</button>
+              <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/necklace.png')">목걸이</button>
+              <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/couple_ring_set.png')">커플링</button>
+              <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/earrings.png')">귀걸이</button>
+              <button type="button" class="preset-img-btn" onclick="selectPresetImg('images/hero.png')">매장 전경</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="post-excerpt">요약 설명 (검색엔진 서치 프리뷰) *</label>
+            <input type="text" id="post-excerpt" class="form-input" placeholder="글의 주요 내용을 1~2문장으로 요약하세요." required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="post-content">본문 내용 *</label>
+            <textarea id="post-content" class="form-textarea" placeholder="글 내용을 입력하세요. 줄바꿈이나 HTML 태그(<p>, <b> 등) 사용 가능합니다." required></textarea>
+          </div>
+
+          <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn-submit" id="btn-submit-post">포스트 발행하기</button>
+            <button type="button" class="btn-gen-xml" onclick="cancelEdit()">취소</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB 3: SEO & Search Engine Registration Guide -->
+    <div id="seo-tab" class="admin-tab-content">
+      <div class="admin-card">
+        <div class="admin-card-title">🔍 네이버 서치어드바이저 & 구글 서치콘솔 등록 관리</div>
+        <p style="color: #9C9489; font-size: 0.9rem; line-height: 1.7; margin-bottom: 2rem;">
+          주얼리 샘의 블로그 포스트와 웹사이트가 네이버 검색 및 구글 검색 결과(AI Overview 포함)에 빠르게 노출될 수 있도록 자동 생성 도구와 제출 가이드를 제공합니다.
+        </p>
+
+        <!-- Sitemap & RSS XML Generator -->
+        <div class="seo-box">
+          <div class="seo-title">📄 1. Sitemap.xml & RSS 피드 자동 다운로드</div>
+          <div class="seo-desc">
+            현재 작성된 블로그 포스트를 반영한 최신 `sitemap.xml`과 `rss.xml` 파일을 즉시 다운로드하여 서버 또는 GitHub 저장소에 업데이트할 수 있습니다.
+          </div>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="btn-gen-xml" onclick="downloadSitemap()">Sitemap.xml 생성 & 다운로드</button>
+            <button class="btn-gen-xml" onclick="downloadRss()">RSS.xml 생성 & 다운로드</button>
+          </div>
+        </div>
+
+        <!-- Naver Search Advisor Guide -->
+        <div class="seo-box">
+          <div class="seo-title">🟢 2. 네이버 서치어드바이저 (Naver Search Advisor) 등록 방법</div>
+          <div class="seo-desc">
+            1. <strong><a href="https://searchadvisor.naver.com/" target="_blank" style="color: #C9A96E;">네이버 서치어드바이저</a></strong> 로그인 후 [웹마스터 도구] ➡️ 사이트 등록에서 <code>https://jewelrysam.kr</code> (또는 도메인) 추가<br>
+            2. 네이버에서 발급하는 소유확인 메타태그 (<code>&lt;meta name="naver-site-verification" content="..."&gt;</code>) 발급받기<br>
+            3. 웹마스터 도구 ➡️ [요청] ➡️ [사이트맵 제출]에서 <code>sitemap.xml</code> 제출하기<br>
+            4. [요청] ➡️ [RSS 제출]에서 <code>rss.xml</code> 제출하기
+          </div>
+        </div>
+
+        <!-- Google Search Console Guide -->
+        <div class="seo-box">
+          <div class="seo-title">🔵 3. 구글 서치콘솔 (Google Search Console) 등록 방법</div>
+          <div class="seo-desc">
+            1. <strong><a href="https://search.google.com/search-console" target="_blank" style="color: #C9A96E;">구글 서치콘솔</a></strong> 접속 후 사이트 URL 주소 추가<br>
+            2. [Sitemaps] 메뉴 클릭 ➡️ <code>sitemap.xml</code> 입력 후 [제출]<br>
+            3. 신규 블로그 글 작성 시 [URL 검사] 메뉴에서 해당 글 URL을 넣고 [색인 생성 요청]을 누르면 Google AI Overview에 빠르게 노출됩니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Default initial blog posts
+    const initialPosts = [
+      {
+        id: 1,
+        title: "[종로 주얼리] 24K 순금 골드바 선물 및 현명한 투자 노하우",
+        category: "골드바 투자",
+        author: "대표 이효진",
+        date: "2026-08-10",
+        image: "images/gold_bar.png",
+        excerpt: "순도 99.9% 순금 골드바를 구매할 때 반드시 확인해야 할 정품 인증서와 종로 주얼리 샘만의 차별화된 세공 보증 노하우를 공개합니다.",
+        content: `
+          <p>금은 대표적인 자산 보존 수단이자 소중한 분께 마음을 전하는 가장 가치 있는 선물입니다. 종로 주얼리 샘에서는 순도 99.9% 홀마크 감정원 인증 순금 골드바만을 엄선하여 제공합니다.</p>
+          <br>
+          <h4>골드바 구매 시 꼭 체크해야 할 3가지</h4>
+          <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
+            <li><strong>순도 99.9% 정품 보증서 발급 여부</strong>: 국가 공인 감정원의 각인이 찍혀 있는지 확인하세요.</li>
+            <li><strong>지급 보증 및 중량 정확성</strong>: 정확한 g(그램) 단위 중량 체크가 필수입니다.</li>
+            <li><strong>전문 상담과 신뢰도</strong>: 서울 종로구 종로 183 효성주얼리시티 1층 1083호 주얼리 샘 매장에서 1:1 맞춤 상담을 받으실 수 있습니다.</li>
+          </ol>
+        `
+      },
+      {
+        id: 2,
+        title: "[커플링 선택 가이드] 영원한 약속을 담은 종로 커플링 세트 추천",
+        category: "커플링 가이드",
+        author: "대표 이효진",
+        date: "2026-08-08",
+        image: "images/couple_ring_set.png",
+        excerpt: "서로의 손끝에서 빛나는 두 사람만의 커플링. 두께, 디자인, 이니셜 각인 서비스까지 세심하게 살펴드리는 맞춤 커플링 가이드입니다.",
+        content: `
+          <p>연인 및 부부의 소중한 기념일을 빛내줄 커플링 세트는 착용감과 디자인의 우아함이 가장 중요합니다.</p>
+          <br>
+          <p>주얼리 샘에서는 심플한 데일리 디자인부터 럭셔리한 인그레이빙 커플링까지 다양하게 구비하고 있으며, <strong>무료 이니셜 각인 서비스</strong>를 함께 제공해 드립니다.</p>
+        `
+      },
+      {
+        id: 3,
+        title: "[귀여운 순금 선물] 캐릭터 골드바 컬렉션 출시 및 선물 추천",
+        category: "주얼리 팁",
+        author: "대표 이효진",
+        date: "2026-08-05",
+        image: "images/character_gold_bar.png",
+        excerpt: "돌잔치 선물, 생일 선물, 기념일 선물로 큰 사랑을 받고 있는 주얼리 샘의 귀여운 십이지신 & 캐릭터 순금 골드바 시리즈를 소개합니다.",
+        content: `
+          <p>딱딱한 골드바 대신 한층 더 사랑스럽고 의미 있는 선물을 찾으신다면 주얼리 샘의 <strong>캐릭터 골드바 컬렉션</strong>을 추천합니다.</p>
+          <br>
+          <p>아기 돌반지 대체 선물이나 특별한 기념일 선물로 인기가 높으며, 99.9% 순금으로 제작되어 소장 가치와 미소까지 선사합니다.</p>
+        `
+      }
+    ];
+
+    // Load stored posts or fallback to initial
+    function getPosts() {
+      const stored = localStorage.getItem('jewelry_sam_posts');
+      if (stored) {
+        try { return JSON.parse(stored); } catch(e) {}
+      }
+      localStorage.setItem('jewelry_sam_posts', JSON.stringify(initialPosts));
+      return initialPosts;
+    }
+
+    function savePosts(posts) {
+      localStorage.setItem('jewelry_sam_posts', JSON.stringify(posts));
+    }
+
+    // Render Admin Post Table
+    function renderPostTable() {
+      const posts = getPosts();
+      const tbody = document.getElementById('admin-post-list');
+      tbody.innerHTML = '';
+
+      if (posts.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #6B6560; padding: 2rem;">등록된 글이 없습니다. 새 글을 작성해 주세요.</td></tr>`;
+        return;
+      }
+
+      posts.forEach((post, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${posts.length - index}</td>
+          <td style="font-weight: 600; color: #F5F0E8;">${escapeHtml(post.title)}</td>
+          <td><span style="color: #C9A96E; font-size: 0.8rem; background: rgba(201,169,110,0.1); padding: 0.2rem 0.6rem; border-radius: 4px;">${escapeHtml(post.category)}</span></td>
+          <td>${post.date}</td>
+          <td>
+            <button class="btn-sm btn-edit" onclick="editPost(${post.id})">수정</button>
+            <button class="btn-sm btn-delete" onclick="deletePost(${post.id})">삭제</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.admin-tab-content').forEach(content => content.classList.remove('active'));
+
+      event.target.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    function selectPresetImg(url) {
+      document.getElementById('post-image').value = url;
+    }
+
+    function handlePostSubmit(e) {
+      e.preventDefault();
+      const idInput = document.getElementById('edit-post-id').value;
+      const title = document.getElementById('post-title').value.trim();
+      const category = document.getElementById('post-category').value;
+      const author = document.getElementById('post-author').value.trim();
+      const image = document.getElementById('post-image').value.trim();
+      const excerpt = document.getElementById('post-excerpt').value.trim();
+      const content = document.getElementById('post-content').value.trim();
+
+      let posts = getPosts();
+
+      if (idInput) {
+        // Edit existing post
+        const postId = parseInt(idInput);
+        const postIndex = posts.findIndex(p => p.id === postId);
+        if (postIndex !== -1) {
+          posts[postIndex] = {
+            ...posts[postIndex],
+            title, category, author, image, excerpt, content
+          };
+          alert('포스트가 수정되었습니다!');
+        }
+      } else {
+        // Add new post
+        const today = new Date().toISOString().split('T')[0];
+        const newPost = {
+          id: Date.now(),
+          title,
+          category,
+          author,
+          date: today,
+          image,
+          excerpt,
+          content
+        };
+        posts.unshift(newPost); // Add at top
+        alert('새 블로그 포스트가 발행되었습니다! 메인 홈페이지에 즉시 노출됩니다.');
+      }
+
+      savePosts(posts);
+      resetForm();
+      renderPostTable();
+      switchTab('posts-tab');
+    }
+
+    function editPost(id) {
+      const posts = getPosts();
+      const post = posts.find(p => p.id === id);
+      if (!post) return;
+
+      document.getElementById('edit-post-id').value = post.id;
+      document.getElementById('post-title').value = post.title;
+      document.getElementById('post-category').value = post.category;
+      document.getElementById('post-author').value = post.author;
+      document.getElementById('post-image').value = post.image;
+      document.getElementById('post-excerpt').value = post.excerpt;
+      document.getElementById('post-content').value = post.content;
+
+      document.getElementById('form-title-text').textContent = '블로그 포스트 수정';
+      document.getElementById('btn-submit-post').textContent = '포스트 수정 완료';
+
+      // Switch to write tab
+      document.querySelectorAll('.admin-tab-btn')[1].click();
+    }
+
+    function cancelEdit() {
+      resetForm();
+      switchTab('posts-tab');
+    }
+
+    function resetForm() {
+      document.getElementById('post-form').reset();
+      document.getElementById('edit-post-id').value = '';
+      document.getElementById('form-title-text').textContent = '새 블로그 포스트 작성';
+      document.getElementById('btn-submit-post').textContent = '포스트 발행하기';
+      document.getElementById('post-author').value = '대표 이효진';
+      document.getElementById('post-image').value = 'images/gold_bar.png';
+    }
+
+    function deletePost(id) {
+      if (!confirm('이 블로그 포스트를 삭제하시겠습니까?')) return;
+
+      let posts = getPosts();
+      posts = posts.filter(p => p.id !== id);
+      savePosts(posts);
+      renderPostTable();
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // Download sitemap.xml
+    function downloadSitemap() {
+      const posts = getPosts();
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+      xml += `  <url>\n    <loc>https://jewelrysam.kr/</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+      
+      posts.forEach(post => {
+        xml += `  <url>\n    <loc>https://jewelrysam.kr/#blog-post-${post.id}</loc>\n    <lastmod>${post.date}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+      });
+
+      xml += `</urlset>`;
+
+      downloadFile('sitemap.xml', xml, 'text/xml');
+    }
+
+    // Download rss.xml
+    function downloadRss() {
+      const posts = getPosts();
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n`;
+      xml += `    <title>주얼리 샘 블로그 | Jewelry SAM</title>\n    <link>https://jewelrysam.kr</link>\n    <description>종로 프리미엄 주얼리 샘의 공식 블로그 - 골드바, 귀걸이, 목걸이, 팔찌, 커플링 소식</description>\n`;
+
+      posts.forEach(post => {
+        xml += `    <item>\n`;
+        xml += `      <title><![CDATA[${post.title}]]></title>\n`;
+        xml += `      <link>https://jewelrysam.kr/#blog-post-${post.id}</link>\n`;
+        xml += `      <description><![CDATA[${post.excerpt}]]></description>\n`;
+        xml += `      <pubDate>${post.date}</pubDate>\n`;
+        xml += `    </item>\n`;
+      });
+
+      xml += `  </channel>\n</rss>`;
+
+      downloadFile('rss.xml', xml, 'text/xml');
+    }
+
+    function downloadFile(filename, text, mimeType) {
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:' + mimeType + ';charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', filename);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+
+    // Initial load
+    renderPostTable();
+  </script>
+</body>
+</html>

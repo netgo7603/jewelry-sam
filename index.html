@@ -165,7 +165,7 @@
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://jewelrysam.kr" },
       { "@type": "ListItem", "position": 2, "name": "컬렉션", "item": "https://jewelrysam.kr/#products" },
-      { "@type": "ListItem", "position": 3, "name": "금·은 시세", "item": "https://jewelrysam.kr/#gold-price" },
+      { "@type": "ListItem", "position": 3, "name": "블로그", "item": "https://jewelrysam.kr/#blog" },
       { "@type": "ListItem", "position": 4, "name": "문의", "item": "https://jewelrysam.kr/#contact" }
     ]
   }
@@ -183,7 +183,7 @@
 
       <ul class="nav-links">
         <li><a href="#products">컬렉션</a></li>
-        <li><a href="#gold-price">금·은 시세</a></li>
+        <li><a href="#blog">블로그</a></li>
         <li><a href="#about">소개</a></li>
         <li><a href="#contact">문의</a></li>
       </ul>
@@ -206,7 +206,7 @@
   <!-- Mobile Menu -->
   <div class="mobile-menu" id="mobileMenu">
     <a href="#products" onclick="closeMobileMenu()">컬렉션</a>
-    <a href="#gold-price" onclick="closeMobileMenu()">금·은 시세</a>
+    <a href="#blog" onclick="closeMobileMenu()">블로그</a>
     <a href="#about" onclick="closeMobileMenu()">소개</a>
     <a href="#contact" onclick="closeMobileMenu()">문의</a>
     <a href="tel:010-7448-7478" class="mobile-menu-phone">
@@ -469,74 +469,39 @@
     </div>
   </section>
 
-  <!-- ========== Gold & Silver Price Section ========== -->
-  <section class="gold-price-section" id="gold-price">
+  <!-- ========== Blog Section ========== -->
+  <section class="blog-section" id="blog">
     <div class="container">
       <div class="products-header animate-on-scroll">
-        <div class="section-label">Market Price</div>
-        <h2 class="section-title">오늘의 금·은 시세</h2>
+        <div class="section-label">Jewelry SAM Blog</div>
+        <h2 class="section-title">주얼리 샘 이야기 & 가이드</h2>
         <div class="gold-divider"></div>
-        <p class="section-subtitle">실시간 국제 귀금속 시세를 확인하세요</p>
+        <p class="section-subtitle">골드바 선택 노하우부터 올바른 주얼리 관리법까지, 정성을 담은 스토리를 만나보세요.</p>
       </div>
 
-      <div class="price-grid animate-on-scroll">
-        <!-- Gold Price Card -->
-        <div class="price-card price-card-gold" id="price-card-gold">
-          <div class="price-card-header">
-            <div class="price-icon gold-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" width="28" height="28">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/>
-              </svg>
-            </div>
-            <div>
-              <div class="price-metal">금 (Gold)</div>
-              <div class="price-unit">XAU/USD · 국제 금 시세</div>
-            </div>
-          </div>
-          <div class="price-value" id="gold-price-value">
-            <span class="price-loading">시세 조회 중...</span>
-          </div>
-          <div class="price-details" id="gold-price-details"></div>
-          <a href="https://search.naver.com/search.naver?query=금시세" target="_blank" rel="noopener noreferrer" class="price-link" id="link-naver-gold">
-            네이버 금시세 확인하기
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
-            </svg>
-          </a>
-        </div>
-
-        <!-- Silver Price Card -->
-        <div class="price-card price-card-silver" id="price-card-silver">
-          <div class="price-card-header">
-            <div class="price-icon silver-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" width="28" height="28">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"/>
-              </svg>
-            </div>
-            <div>
-              <div class="price-metal">은 (Silver)</div>
-              <div class="price-unit">XAG/USD · 국제 은 시세</div>
-            </div>
-          </div>
-          <div class="price-value" id="silver-price-value">
-            <span class="price-loading">시세 조회 중...</span>
-          </div>
-          <div class="price-details" id="silver-price-details"></div>
-          <a href="https://search.naver.com/search.naver?query=은시세" target="_blank" rel="noopener noreferrer" class="price-link" id="link-naver-silver">
-            네이버 은시세 확인하기
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
-            </svg>
-          </a>
-        </div>
-      </div>
-
-      <div class="price-disclaimer animate-on-scroll">
-        <p>※ 시세는 국제 시세 기준이며, 국내 매매 시세와 다를 수 있습니다. 정확한 제품 가격은 매장으로 문의해 주세요.</p>
-        <div class="price-update-time" id="price-update-time"></div>
+      <div class="blog-grid" id="home-blog-grid">
+        <!-- Dynamic Blog Cards from JS -->
       </div>
     </div>
   </section>
+
+  <!-- ========== Blog Detail Modal ========== -->
+  <div class="blog-modal-backdrop" id="blogModalBackdrop" onclick="closeBlogModal(event)">
+    <div class="blog-modal-content" onclick="event.stopPropagation()">
+      <button class="blog-modal-close" onclick="closeBlogModal()">&times;</button>
+      <div class="blog-modal-header">
+        <span class="blog-card-tag" id="modal-blog-category">카테고리</span>
+        <h2 class="blog-modal-title" id="modal-blog-title">블로그 포스트 제목</h2>
+        <div class="blog-card-meta" id="modal-blog-meta">작성자 · 날짜</div>
+      </div>
+      <div class="blog-modal-img-box">
+        <img id="modal-blog-img" src="" alt="포스트 이미지">
+      </div>
+      <div class="blog-modal-body" id="modal-blog-body">
+        <!-- Post content -->
+      </div>
+    </div>
+  </div>
 
   <!-- ========== CTA / Contact Section ========== -->
   <section class="cta-banner" id="contact">
@@ -706,81 +671,131 @@
     });
 
     // ==========================================
-    // Gold & Silver Price Fetcher
+    // Blog Rendering & Modal Manager
     // ==========================================
-    async function fetchMetalPrices() {
-      const goldValueEl = document.getElementById('gold-price-value');
-      const silverValueEl = document.getElementById('silver-price-value');
-      const goldDetailsEl = document.getElementById('gold-price-details');
-      const silverDetailsEl = document.getElementById('silver-price-details');
-      const updateTimeEl = document.getElementById('price-update-time');
-
-      try {
-        // Fetch from open metals API (no key required for basic)
-        const response = await fetch('https://api.metalpriceapi.com/v1/latest?api_key=demo&base=USD&currencies=XAU,XAG,KRW');
-        
-        if (!response.ok) throw new Error('API error');
-
-        const data = await response.json();
-
-        if (data && data.rates) {
-          const krwRate = data.rates.KRW || 1380; // fallback KRW rate
-          const goldOzUSD = data.rates.XAU ? (1 / data.rates.XAU) : null;
-          const silverOzUSD = data.rates.XAG ? (1 / data.rates.XAG) : null;
-
-          if (goldOzUSD) {
-            const goldGramKRW = (goldOzUSD * krwRate / 31.1035).toFixed(0);
-            goldValueEl.innerHTML = `<span class="price-amount">₩${Number(goldGramKRW).toLocaleString()}</span><span class="price-per">/g</span>`;
-            goldDetailsEl.innerHTML = `<span class="price-detail-item">국제 $${goldOzUSD.toFixed(2)}/oz</span>`;
-          }
-
-          if (silverOzUSD) {
-            const silverGramKRW = (silverOzUSD * krwRate / 31.1035).toFixed(0);
-            silverValueEl.innerHTML = `<span class="price-amount">₩${Number(silverGramKRW).toLocaleString()}</span><span class="price-per">/g</span>`;
-            silverDetailsEl.innerHTML = `<span class="price-detail-item">국제 $${silverOzUSD.toFixed(2)}/oz</span>`;
-          }
-
-          const now = new Date();
-          updateTimeEl.textContent = `마지막 업데이트: ${now.toLocaleDateString('ko-KR')} ${now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}`;
-          return; // success
-        }
-      } catch (e) {
-        console.log('Primary API failed, trying fallback...');
+    const defaultPosts = [
+      {
+        id: 1,
+        title: "[종로 주얼리] 24K 순금 골드바 선물 및 현명한 투자 노하우",
+        category: "골드바 투자",
+        author: "대표 이효진",
+        date: "2026-08-10",
+        image: "images/gold_bar.png",
+        excerpt: "순도 99.9% 순금 골드바를 구매할 때 반드시 확인해야 할 정품 인증서와 종로 주얼리 샘만의 차별화된 세공 보증 노하우를 공개합니다.",
+        content: `
+          <p>금은 대표적인 자산 보존 수단이자 소중한 분께 마음을 전하는 가장 가치 있는 선물입니다. 종로 주얼리 샘에서는 순도 99.9% 홀마크 감정원 인증 순금 골드바만을 엄선하여 제공합니다.</p>
+          <br>
+          <h4>골드바 구매 시 꼭 체크해야 할 3가지</h4>
+          <ol style="margin-left: 1.5rem; margin-top: 0.5rem; line-height: 1.8;">
+            <li><strong>순도 99.9% 정품 보증서 발급 여부</strong>: 국가 공인 감정원의 각인이 찍혀 있는지 확인하세요.</li>
+            <li><strong>지급 보증 및 중량 정확성</strong>: 정확한 g(그램) 단위 중량 체크가 필수입니다.</li>
+            <li><strong>전문 상담과 신뢰도</strong>: 서울 종로구 종로 183 효성주얼리시티 1층 1083호 주얼리 샘 매장에서 1:1 맞춤 상담을 받으실 수 있습니다.</li>
+          </ol>
+        `
+      },
+      {
+        id: 2,
+        title: "[커플링 선택 가이드] 영원한 약속을 담은 종로 커플링 세트 추천",
+        category: "커플링 가이드",
+        author: "대표 이효진",
+        date: "2026-08-08",
+        image: "images/couple_ring_set.png",
+        excerpt: "서로의 손끝에서 빛나는 두 사람만의 커플링. 두께, 디자인, 이니셜 각인 서비스까지 세심하게 살펴드리는 맞춤 커플링 가이드입니다.",
+        content: `
+          <p>연인 및 부부의 소중한 기념일을 빛내줄 커플링 세트는 착용감과 디자인의 우아함이 가장 중요합니다.</p>
+          <br>
+          <p>주얼리 샘에서는 심플한 데일리 디자인부터 럭셔리한 인그레이빙 커플링까지 다양하게 구비하고 있으며, <strong>무료 이니셜 각인 서비스</strong>를 함께 제공해 드립니다.</p>
+        `
+      },
+      {
+        id: 3,
+        title: "[귀여운 순금 선물] 캐릭터 골드바 컬렉션 출시 및 선물 추천",
+        category: "주얼리 팁",
+        author: "대표 이효진",
+        date: "2026-08-05",
+        image: "images/character_gold_bar.png",
+        excerpt: "돌잔치 선물, 생일 선물, 기념일 선물로 큰 사랑을 받고 있는 주얼리 샘의 귀여운 십이지신 & 캐릭터 순금 골드바 시리즈를 소개합니다.",
+        content: `
+          <p>딱딱한 골드바 대신 한층 더 사랑스럽고 의미 있는 선물을 찾으신다면 주얼리 샘의 <strong>캐릭터 골드바 컬렉션</strong>을 추천합니다.</p>
+          <br>
+          <p>아기 돌반지 대체 선물이나 특별한 기념일 선물로 인기가 높으며, 99.9% 순금으로 제작되어 소장 가치와 미소까지 선사합니다.</p>
+        `
       }
+    ];
 
-      // Fallback: try frankfurter API for KRW rate + hardcoded approximate gold/silver
-      try {
-        const fxResp = await fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=KRW');
-        const fxData = await fxResp.json();
-        const krwRate = fxData?.rates?.KRW || 1380;
-
-        // Use approximate current market prices as fallback
-        const goldOzUSD = 2650;
-        const silverOzUSD = 31.5;
-
-        const goldGramKRW = (goldOzUSD * krwRate / 31.1035).toFixed(0);
-        const silverGramKRW = (silverOzUSD * krwRate / 31.1035).toFixed(0);
-
-        goldValueEl.innerHTML = `<span class="price-amount">₩${Number(goldGramKRW).toLocaleString()}</span><span class="price-per">/g</span>`;
-        goldDetailsEl.innerHTML = `<span class="price-detail-item">국제 ~$${goldOzUSD}/oz</span><span class="price-detail-approx">참고 시세</span>`;
-
-        silverValueEl.innerHTML = `<span class="price-amount">₩${Number(silverGramKRW).toLocaleString()}</span><span class="price-per">/g</span>`;
-        silverDetailsEl.innerHTML = `<span class="price-detail-item">국제 ~$${silverOzUSD}/oz</span><span class="price-detail-approx">참고 시세</span>`;
-
-        const now = new Date();
-        updateTimeEl.textContent = `참고 시세 · ${now.toLocaleDateString('ko-KR')} · 정확한 시세는 네이버 금시세를 확인하세요`;
-      } catch (e2) {
-        // Final fallback: static display with links
-        goldValueEl.innerHTML = `<a href="https://search.naver.com/search.naver?query=금시세" target="_blank" class="price-fallback-link">네이버에서 금시세 확인 →</a>`;
-        silverValueEl.innerHTML = `<a href="https://search.naver.com/search.naver?query=은시세" target="_blank" class="price-fallback-link">네이버에서 은시세 확인 →</a>`;
-        updateTimeEl.textContent = '시세 정보를 불러올 수 없습니다. 네이버 금시세 페이지에서 확인해 주세요.';
+    function getHomePagePosts() {
+      const stored = localStorage.getItem('jewelry_sam_posts');
+      if (stored) {
+        try { return JSON.parse(stored); } catch(e) {}
       }
+      return defaultPosts;
     }
 
-    // Fetch prices on page load
-    fetchMetalPrices();
-    // Refresh every 10 minutes
-    setInterval(fetchMetalPrices, 10 * 60 * 1000);
+    function renderHomePageBlog() {
+      const grid = document.getElementById('home-blog-grid');
+      if (!grid) return;
+
+      const posts = getHomePagePosts();
+      grid.innerHTML = '';
+
+      posts.slice(0, 6).forEach(post => {
+        const article = document.createElement('article');
+        article.className = 'blog-card animate-on-scroll visible';
+        article.onclick = () => openBlogModal(post.id);
+
+        article.innerHTML = `
+          <div class="blog-card-img">
+            <img src="${post.image}" alt="${escapeHtml(post.title)}" loading="lazy">
+            <span class="blog-card-tag">${escapeHtml(post.category)}</span>
+          </div>
+          <div class="blog-card-content">
+            <div class="blog-card-meta">${post.author} · ${post.date}</div>
+            <h3 class="blog-card-title">${escapeHtml(post.title)}</h3>
+            <p class="blog-card-excerpt">${escapeHtml(post.excerpt)}</p>
+            <div class="blog-card-readmore">
+              자세히 읽기
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+              </svg>
+            </div>
+          </div>
+        `;
+        grid.appendChild(article);
+      });
+    }
+
+    function openBlogModal(id) {
+      const posts = getHomePagePosts();
+      const post = posts.find(p => p.id === id);
+      if (!post) return;
+
+      document.getElementById('modal-blog-category').textContent = post.category;
+      document.getElementById('modal-blog-title').textContent = post.title;
+      document.getElementById('modal-blog-meta').textContent = `${post.author} · ${post.date}`;
+      document.getElementById('modal-blog-img').src = post.image;
+      document.getElementById('modal-blog-body').innerHTML = post.content;
+
+      const modal = document.getElementById('blogModalBackdrop');
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeBlogModal(e) {
+      if (e && e.target !== document.getElementById('blogModalBackdrop') && !e.target.classList.contains('blog-modal-close')) {
+        return;
+      }
+      const modal = document.getElementById('blogModalBackdrop');
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // Initialize blog section
+    renderHomePageBlog();
+    window.addEventListener('storage', renderHomePageBlog);
   </script>
 </body>
 </html>

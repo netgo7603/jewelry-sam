@@ -245,7 +245,15 @@ export default {
           const object = await env.SAM_R2_BUCKET.get(filename);
           if (object) {
             const headers = new Headers();
-            object.writeHttpMetadata(headers);
+            const ext = filename.split('.').pop().toLowerCase();
+            let mime = "image/png";
+            if (ext === "jpg" || ext === "jpeg") mime = "image/jpeg";
+            else if (ext === "webp") mime = "image/webp";
+            else if (ext === "gif") mime = "image/gif";
+            else if (ext === "svg") mime = "image/svg+xml";
+
+            headers.set("Content-Type", object.httpMetadata?.contentType || mime);
+            headers.set("Content-Disposition", "inline");
             headers.set("Access-Control-Allow-Origin", "*");
             headers.set("Cache-Control", "public, max-age=31536000");
             return new Response(object.body, { headers });

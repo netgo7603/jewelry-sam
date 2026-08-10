@@ -2,6 +2,59 @@
  * Cloudflare Worker API & AI RAG Multi-Session Live Chat Engine for Jewelry SAM
  */
 
+const DEFAULT_POSTS = [
+  {
+    id: 1,
+    title: "[종로 주얼리] 24K 순금 골드바 선물 및 현명한 투자 노하우",
+    category: "골드바 투자",
+    author: "대표 이효진",
+    date: "2026-08-10",
+    image: "images/gold_bar.png",
+    excerpt: "순도 99.9% 순금 골드바를 구매할 때 반드시 확인해야 할 정품 인증서와 종로 주얼리 샘만의 차별화된 세공 보증 노하우를 공개합니다.",
+    content: "<p>금은 대표적인 자산 보존 수단이자 소중한 분께 마음을 전하는 가장 가치 있는 선물입니다. 종로 주얼리 샘에서는 순도 99.9% 홀마크 감정원 인증 순금 골드바만을 엄선하여 제공합니다.</p><br><h4>골드바 구매 시 꼭 체크해야 할 3가지</h4><ol style=\"margin-left: 1.5rem; margin-top: 0.5rem; line-height: 1.8;\"><li><strong>순도 99.9% 정품 보증서 발급 여부</strong>: 국가 공인 감정원의 각인이 찍혀 있는지 확인하세요.</li><li><strong>지급 보증 및 중량 정확성</strong>: 정확한 g(그램) 단위 중량 체크가 필수입니다.</li><li><strong>전문 상담과 신뢰도</strong>: 서울 종로구 종로 183 효성주얼리시티 1층 1083호 주얼리 샘 매장에서 1:1 맞춤 상담을 받으실 수 있습니다.</li></ol>"
+  },
+  {
+    id: 2,
+    title: "[커플링 선택 가이드] 영원한 약속을 담은 종로 커플링 세트 추천",
+    category: "커플링 가이드",
+    author: "대표 이효진",
+    date: "2026-08-08",
+    image: "images/couple_ring_set.png",
+    excerpt: "서로의 손끝에서 빛나는 두 사람만의 커플링. 두께, 디자인, 이니셜 각인 서비스까지 세심하게 살펴드리는 맞춤 커플링 가이드입니다.",
+    content: "<p>연인 및 부부의 소중한 기념일을 빛내줄 커플링 세트는 착용감과 디자인의 우아함이 가장 중요합니다.</p><br><p>주얼리 샘에서는 심플한 데일리 디자인부터 럭셔리한 인그레이빙 커플링까지 다양하게 구비하고 있으며, <strong>무료 이니셜 각인 서비스</strong>를 함께 제공해 드립니다.</p>"
+  },
+  {
+    id: 3,
+    title: "[귀여운 순금 선물] 캐릭터 골드바 컬렉션 출시 및 선물 추천",
+    category: "주얼리 팁",
+    author: "대표 이효진",
+    date: "2026-08-05",
+    image: "images/character_gold_bar.png",
+    excerpt: "돌잔치 선물, 생일 선물, 기념일 선물로 큰 사랑을 받고 있는 주얼리 샘의 귀여운 십이지신 & 캐릭터 순금 골드바 시리즈를 소개합니다.",
+    content: "<p>딱딱한 골드바 대신 한층 더 사랑스럽고 의미 있는 선물을 찾으신다면 주얼리 샘의 <strong>캐릭터 골드바 컬렉션</strong>을 추천합니다.</p><br><p>아기 돌반지 대체 선물이나 특별한 기념일 선물로 인기가 높으며, 99.9% 순금으로 제작되어 소장 가치와 미소까지 선사합니다.</p>"
+  },
+  {
+    id: 4,
+    title: "[다이아몬드 가이드] 영롱하게 빛나는 우신·GIA 다이아몬드 선택 노하우",
+    category: "다이아몬드",
+    author: "상담원",
+    date: "2026-08-03",
+    image: "images/earrings.png",
+    excerpt: "다이아몬드 구매 시 필수 체크 요소인 4C(Carat, Cut, Color, Clarity) 기준과 우신·GIA 정품 감정서 확인법을 안내해 드립니다.",
+    content: "<p>영원한 빛을 자랑하는 다이아몬드는 공인 감정원의 정식 감정서가 핵심입니다. 주얼리 샘에서는 우신, GIA 정품 감정 다이아만을 정직하게 제공합니다.</p>"
+  },
+  {
+    id: 5,
+    title: "[데일리 주얼리] 18K·14K 럭셔리 귀걸이 & 목걸이 레이어링 스타일링 팁",
+    category: "스타일 가이드",
+    author: "상담원",
+    date: "2026-08-01",
+    image: "images/necklace.png",
+    excerpt: "일상룩에 고급스러움을 더해주는 18K/14K 드롭 귀걸이와 로즈골드 펜던트 목걸이 레이어링 조합 팁을 소개합니다.",
+    content: "<p>은은한 클래식 감성의 18K 목걸이와 귀걸이는 과하지 않은 차분한 화려함을 완성해 줍니다.</p>"
+  }
+];
+
 const DEFAULT_JEWELRY_SAM_KB = [
   {
     id: 1,
@@ -90,13 +143,24 @@ export default {
     }
 
     try {
-      // Get active Knowledge Base from KV or Default
       async function getActiveKB() {
         if (env.SAM_KV) {
           const stored = await env.SAM_KV.get("jewelry_sam_kb");
           if (stored) return JSON.parse(stored);
         }
         return DEFAULT_JEWELRY_SAM_KB;
+      }
+
+      async function getActivePosts() {
+        let posts = [];
+        if (env.SAM_KV) {
+          const stored = await env.SAM_KV.get("jewelry_sam_posts");
+          if (stored) posts = JSON.parse(stored);
+        }
+        if (!posts || posts.length === 0) {
+          posts = DEFAULT_POSTS;
+        }
+        return posts;
       }
 
       // 1. AI RAG Vector Chatbot API (POST /api/chat)
@@ -264,77 +328,14 @@ export default {
 
       // 6. GET Posts List (GET /api/posts)
       if (url.pathname === "/api/posts" && request.method === "GET") {
-        let posts = [];
-        if (env.SAM_KV) {
-          const stored = await env.SAM_KV.get("jewelry_sam_posts");
-          if (stored) posts = JSON.parse(stored);
-        }
-        if (!posts || posts.length === 0) {
-          posts = [
-            {
-              id: 1,
-              title: "[종로 주얼리] 24K 순금 골드바 선물 및 현명한 투자 노하우",
-              category: "골드바 투자",
-              author: "대표 이효진",
-              date: "2026-08-10",
-              image: "images/gold_bar.png",
-              excerpt: "순도 99.9% 순금 골드바를 구매할 때 반드시 확인해야 할 정품 인증서와 종로 주얼리 샘만의 차별화된 세공 보증 노하우를 공개합니다.",
-              content: "<p>금은 대표적인 자산 보존 수단이자 소중한 분께 마음을 전하는 가장 가치 있는 선물입니다. 종로 주얼리 샘에서는 순도 99.9% 홀마크 감정원 인증 순금 골드바만을 엄선하여 제공합니다.</p><br><h4>골드바 구매 시 꼭 체크해야 할 3가지</h4><ol style=\"margin-left: 1.5rem; margin-top: 0.5rem; line-height: 1.8;\"><li><strong>순도 99.9% 정품 보증서 발급 여부</strong>: 국가 공인 감정원의 각인이 찍혀 있는지 확인하세요.</li><li><strong>지급 보증 및 중량 정확성</strong>: 정확한 g(그램) 단위 중량 체크가 필수입니다.</li><li><strong>전문 상담과 신뢰도</strong>: 서울 종로구 종로 183 효성주얼리시티 1층 1083호 주얼리 샘 매장에서 1:1 맞춤 상담을 받으실 수 있습니다.</li></ol>"
-            },
-            {
-              id: 2,
-              title: "[커플링 선택 가이드] 영원한 약속을 담은 종로 커플링 세트 추천",
-              category: "커플링 가이드",
-              author: "대표 이효진",
-              date: "2026-08-08",
-              image: "images/couple_ring_set.png",
-              excerpt: "서로의 손끝에서 빛나는 두 사람만의 커플링. 두께, 디자인, 이니셜 각인 서비스까지 세심하게 살펴드리는 맞춤 커플링 가이드입니다.",
-              content: "<p>연인 및 부부의 소중한 기념일을 빛내줄 커플링 세트는 착용감과 디자인의 우아함이 가장 중요합니다.</p><br><p>주얼리 샘에서는 심플한 데일리 디자인부터 럭셔리한 인그레이빙 커플링까지 다양하게 구비하고 있으며, <strong>무료 이니셜 각인 서비스</strong>를 함께 제공해 드립니다.</p>"
-            },
-            {
-              id: 3,
-              title: "[귀여운 순금 선물] 캐릭터 골드바 컬렉션 출시 및 선물 추천",
-              category: "주얼리 팁",
-              author: "대표 이효진",
-              date: "2026-08-05",
-              image: "images/character_gold_bar.png",
-              excerpt: "돌잔치 선물, 생일 선물, 기념일 선물로 큰 사랑을 받고 있는 주얼리 샘의 귀여운 십이지신 & 캐릭터 순금 골드바 시리즈를 소개합니다.",
-              content: "<p>딱딱한 골드바 대신 한층 더 사랑스럽고 의미 있는 선물을 찾으신다면 주얼리 샘의 <strong>캐릭터 골드바 컬렉션</strong>을 추천합니다.</p><br><p>아기 돌반지 대체 선물이나 특별한 기념일 선물로 인기가 높으며, 99.9% 순금으로 제작되어 소장 가치와 미소까지 선사합니다.</p>"
-            },
-            {
-              id: 4,
-              title: "[다이아몬드 가이드] 영롱하게 빛나는 우신·GIA 다이아몬드 선택 노하우",
-              category: "다이아몬드",
-              author: "상담원",
-              date: "2026-08-03",
-              image: "images/earrings.png",
-              excerpt: "다이아몬드 구매 시 필수 체크 요소인 4C(Carat, Cut, Color, Clarity) 기준과 우신·GIA 정품 감정서 확인법을 안내해 드립니다.",
-              content: "<p>영원한 빛을 자랑하는 다이아몬드는 공인 감정원의 정식 감정서가 핵심입니다. 주얼리 샘에서는 우신, GIA 정품 감정 다이아만을 정직하게 제공합니다.</p>"
-            },
-            {
-              id: 5,
-              title: "[데일리 주얼리] 18K·14K 럭셔리 귀걸이 & 목걸이 레이어링 스타일링 팁",
-              category: "스타일 가이드",
-              author: "상담원",
-              date: "2026-08-01",
-              image: "images/necklace.png",
-              excerpt: "일상룩에 고급스러움을 더해주는 18K/14K 드롭 귀걸이와 로즈골드 펜던트 목걸이 레이어링 조합 팁을 소개합니다.",
-              content: "<p>은은한 클래식 감성의 18K 목걸이와 귀걸이는 과하지 않은 차분한 화려함을 완성해 줍니다.</p>"
-            }
-          ];
-        }
+        const posts = await getActivePosts();
         return new Response(JSON.stringify(posts), { headers: corsHeaders });
       }
 
       // 7. Save / Update Posts (POST /api/posts)
       if (url.pathname === "/api/posts" && request.method === "POST") {
         const postData = await request.json();
-        let posts = [];
-
-        if (env.SAM_KV) {
-          const stored = await env.SAM_KV.get("jewelry_sam_posts");
-          if (stored) posts = JSON.parse(stored);
-        }
+        let posts = await getActivePosts();
 
         if (postData.id) {
           const idx = posts.findIndex((p) => p.id === postData.id);
@@ -361,12 +362,10 @@ export default {
       // 8. Delete Post (DELETE /api/posts/:id)
       if (url.pathname.startsWith("/api/posts/") && request.method === "DELETE") {
         const id = parseInt(url.pathname.replace("/api/posts/", ""));
-        let posts = [];
+        let posts = await getActivePosts();
+        posts = posts.filter((p) => p.id !== id);
 
         if (env.SAM_KV) {
-          const stored = await env.SAM_KV.get("jewelry_sam_posts");
-          if (stored) posts = JSON.parse(stored);
-          posts = posts.filter((p) => p.id !== id);
           await env.SAM_KV.put("jewelry_sam_posts", JSON.stringify(posts));
         }
 

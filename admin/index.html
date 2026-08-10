@@ -622,9 +622,31 @@
             <form onsubmit="handleAdminSendChatMessage(event)" style="display: flex; gap: 0.5rem; flex-shrink: 0;">
               <input type="text" id="admin-chat-input" class="form-input" placeholder="고객에게 보내실 1:1 실시간 메시지를 입력하세요..." required style="flex: 1;">
               <button type="submit" class="btn-submit" style="white-space: nowrap; padding: 0.75rem 1.25rem;">전송 ↵</button>
-            </form>
+        <!-- AI Vector KB Editor -->
+        <div style="margin-top: 2rem; border-top: 1px solid rgba(201,169,110,0.15); padding-top: 1.5rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;" class="mobile-stack">
+            <div style="font-weight: 600; font-size: 1.1rem; color: #F5F0E8;">🧠 AI 챗봇 Vector DB 지식베이스 실시간 관리</div>
+            <button class="btn-gen-xml" onclick="addNewKbRow()">➕ 지식 항목 추가</button>
           </div>
-
+          <p style="color: #9C9489; font-size: 0.85rem; margin-bottom: 1rem;">
+            고객이 챗봇에 물어볼 때 AI가 탐색하는 Vector 지식 데이터(키워드 및 자동 답변)입니다. 수정 후 아래 <strong>[💾 저장 및 반영하기]</strong>를 누르시면 실시간 챗봇에 즉시 적용됩니다.
+          </p>
+          <div class="table-wrapper">
+            <table class="post-table">
+              <thead>
+                <tr>
+                  <th style="width: 130px;">카테고리</th>
+                  <th style="width: 220px;">감지 키워드 (쉼표 구분)</th>
+                  <th>챗봇 자동 응답 답변 내용 (Markdown 지원)</th>
+                  <th style="width: 70px;">삭제</th>
+                </tr>
+              </thead>
+              <tbody id="admin-kb-list">
+                <!-- Dynamic KB rows render -->
+              </tbody>
+            </table>
+          </div>
+          <button class="btn-submit" style="margin-top: 1rem; width: 100%; font-size: 1.05rem;" onclick="saveAdminKbData()">💾 AI Vector DB 지식 저장 및 챗봇 실시간 반영하기</button>
         </div>
       </div>
     </div>
@@ -841,11 +863,93 @@
 
       if (tabId === 'chat-tab') {
         startLiveChatPolling();
+        fetchAdminKbData();
       } else {
         if (liveChatTimer) {
           clearInterval(liveChatTimer);
           liveChatTimer = null;
         }
+      }
+    }
+
+    let currentKbList = [];
+
+    async function fetchAdminKbData() {
+      try {
+        const resp = await fetch(`${API_BASE}/api/kb`);
+        if (resp.ok) {
+          currentKbList = await resp.json();
+          renderAdminKbTable();
+        }
+      } catch(e) {}
+    }
+
+    function renderAdminKbTable() {
+      const tbody = document.getElementById('admin-kb-list');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      currentKbList.forEach((item, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input type="text" class="form-input kb-cat" value="${escapeHtml(item.category || '')}" placeholder="예: 시세"></td>
+          <td><input type="text" class="form-input kb-kw" value="${escapeHtml((item.keywords || []).join(', '))}" placeholder="키워드 쉼표 구분"></td>
+          <td><textarea class="form-input kb-ans" rows="2" style="resize:vertical;">${escapeHtml(item.answer || '')}</textarea></td>
+          <td style="text-align:center;">
+            <button class="btn-sm btn-delete" onclick="removeKbRow(${idx})">삭제</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function addNewKbRow() {
+      currentKbList.push({
+        id: Date.now(),
+        category: "신규 항목",
+        keywords: ["단어1", "단어2"],
+        answer: "💎 답변 내용을 작성하세요."
+      });
+      renderAdminKbTable();
+    }
+
+    function removeKbRow(idx) {
+      currentKbList.splice(idx, 1);
+      renderAdminKbTable();
+    }
+
+    async function saveAdminKbData() {
+      const rows = document.querySelectorAll('#admin-kb-list tr');
+      const updatedList = [];
+
+      rows.forEach((row, idx) => {
+        const cat = row.querySelector('.kb-cat').value.trim();
+        const kwStr = row.querySelector('.kb-kw').value.trim();
+        const ans = row.querySelector('.kb-ans').value.trim();
+
+        const keywords = kwStr.split(',').map(s => s.trim()).filter(Boolean);
+        if (cat || keywords.length > 0 || ans) {
+          updatedList.push({
+            id: idx + 1,
+            category: cat,
+            keywords: keywords,
+            answer: ans
+          });
+        }
+      });
+
+      try {
+        const resp = await fetch(`${API_BASE}/api/kb`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedList)
+        });
+        if (resp.ok) {
+          alert('✨ AI Vector DB 지식베이스가 성공적으로 저장되었습니다!\n\n홈페이지 챗봇에 수정하신 지식이 실시간 반영됩니다.');
+          fetchAdminKbData();
+        }
+      } catch(e) {
+        alert('저장 중 오류가 발생했습니다.');
       }
     }
 

@@ -674,11 +674,13 @@
     // Blog Rendering & Modal Manager
     // ==========================================
     let loadedPosts = [];
-    const API_BASE = 'https://documind-backend.lymin80.workers.dev';
+    const API_BASE = window.location.origin.includes('lymin80.shop') 
+      ? window.location.origin 
+      : 'https://jewelry-sam-api.lymin80.workers.dev';
 
     async function fetchHomePagePosts() {
       try {
-        const apiResp = await fetch(`${API_BASE}/api/posts`);
+        const apiResp = await fetch(`${API_BASE}/api/posts?t=` + Date.now());
         if (apiResp.ok) {
           const apiPosts = await apiResp.json();
           if (Array.isArray(apiPosts) && apiPosts.length > 0) {
@@ -698,17 +700,6 @@
         } catch (e) {
           console.log('Failed to fetch posts.json');
         }
-      }
-
-      // Check if localStorage has active session edits
-      const stored = localStorage.getItem('jewelry_sam_posts');
-      if (stored) {
-        try {
-          const storedPosts = JSON.parse(stored);
-          if (storedPosts && storedPosts.length > 0) {
-            loadedPosts = storedPosts;
-          }
-        } catch (e) {}
       }
 
       renderHomePageBlog();
@@ -732,7 +723,7 @@
 
         article.innerHTML = `
           <div class="blog-card-img">
-            <img src="${post.image}" alt="${escapeHtml(post.title)}" loading="lazy">
+            <img src="${post.image}" alt="${escapeHtml(post.title)}" loading="lazy" onerror="this.onerror=null; this.src='images/gold_bar.png';">
             <span class="blog-card-tag">${escapeHtml(post.category)}</span>
           </div>
           <div class="blog-card-content">

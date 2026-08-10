@@ -84,7 +84,8 @@ export default {
     // Serve static website assets (HTML, CSS, JS) for non-API routes
     const isApiOrR2 = url.pathname.startsWith("/api/") || url.pathname.startsWith("/r2/");
     if (!isApiOrR2 && env.ASSETS) {
-      return await env.ASSETS.fetch(request);
+      const res = await env.ASSETS.fetch(request);
+      if (res.status < 400) return res;
     }
 
     const pathname = url.pathname.replace(/\/$/, "");
@@ -334,10 +335,6 @@ export default {
       if (env.ASSETS) {
         return await env.ASSETS.fetch(request);
       }
-
-      return new Response(JSON.stringify({ message: "Jewelry SAM API Server (Pure KV DB)" }), {
-        headers: corsHeaders,
-      });
     } catch (err) {
       return new Response(JSON.stringify({ error: err.message }), {
         status: 500,

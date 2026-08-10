@@ -1,1 +1,2 @@
-# Cloudflare Pages Redirects
+/api/* https://jewelry-sam-api.lymin80.workers.dev/api/:splat 200
+/r2/* https://jewelry-sam-api.lymin80.workers.dev/r2/:splat 200

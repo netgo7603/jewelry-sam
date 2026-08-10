@@ -229,13 +229,29 @@ export default {
           });
         }
 
-        const r2PublicDomain = env.R2_PUBLIC_DOMAIN || "https://documind-backend.lymin80.workers.dev/r2";
+        const r2PublicDomain = env.R2_PUBLIC_DOMAIN || "https://sam.lymin80.shop/r2";
         const imageUrl = `${r2PublicDomain}/${filename}`;
 
         return new Response(
           JSON.stringify({ success: true, url: imageUrl, filename }),
           { headers: corsHeaders }
         );
+      }
+
+      // 5-1. Get R2 File Stream (GET /r2/:filename)
+      if (url.pathname.startsWith("/r2/") && request.method === "GET") {
+        const filename = url.pathname.replace("/r2/", "");
+        if (env.SAM_R2_BUCKET) {
+          const object = await env.SAM_R2_BUCKET.get(filename);
+          if (object) {
+            const headers = new Headers();
+            object.writeHttpMetadata(headers);
+            headers.set("Access-Control-Allow-Origin", "*");
+            headers.set("Cache-Control", "public, max-age=31536000");
+            return new Response(object.body, { headers });
+          }
+        }
+        return new Response("File not found", { status: 404 });
       }
 
       // 6. GET Posts List (GET /api/posts)

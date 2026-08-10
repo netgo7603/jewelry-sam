@@ -102,15 +102,15 @@ export default {
       // Send Telegram notification when customer requests live chat or sends message
       async function sendTelegramNotification(chatData, env) {
         let botToken = env.TELEGRAM_BOT_TOKEN;
-        let chatId = env.TELEGRAM_CHAT_ID;
+        let chatId = env.TELEGRAM_CHAT_ID || "55662020";
 
-        if (env.SAM_KV && (!botToken || !chatId)) {
+        if (env.SAM_KV) {
           const cfg = await env.SAM_KV.get("jewelry_sam_telegram_cfg");
           if (cfg) {
             try {
               const parsed = JSON.parse(cfg);
               botToken = botToken || parsed.botToken;
-              chatId = chatId || parsed.chatId;
+              chatId = parsed.chatId || chatId;
             } catch(e) {}
           }
         }
@@ -259,13 +259,14 @@ export default {
 
       // 4-1. Telegram Notification Config API (GET/POST /api/telegram-config)
       if (url.pathname === "/api/telegram-config" && request.method === "GET") {
-        let cfg = { botToken: env.TELEGRAM_BOT_TOKEN || "", chatId: env.TELEGRAM_CHAT_ID || "" };
+        let cfg = { botToken: env.TELEGRAM_BOT_TOKEN || "", chatId: env.TELEGRAM_CHAT_ID || "55662020" };
         if (env.SAM_KV) {
           const stored = await env.SAM_KV.get("jewelry_sam_telegram_cfg");
           if (stored) {
             try { cfg = { ...cfg, ...JSON.parse(stored) }; } catch(e) {}
           }
         }
+        if (!cfg.chatId) cfg.chatId = "55662020";
         return new Response(JSON.stringify(cfg), { headers: corsHeaders });
       }
 

@@ -719,7 +719,7 @@
         return;
       }
 
-      loadedPosts.slice(0, 6).forEach(post => {
+      loadedPosts.forEach(post => {
         const article = document.createElement('article');
         article.className = 'blog-card animate-on-scroll visible';
         article.onclick = () => openBlogModal(post.id);

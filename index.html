@@ -713,9 +713,11 @@
         article.className = 'blog-card animate-on-scroll visible';
         article.onclick = () => openBlogModal(post.id);
 
+        const imgUrl = (post.image || 'images/gold_bar.png').replace("documind-backend.lymin80.workers.dev", "jewelry-sam-api.lymin80.workers.dev");
+
         article.innerHTML = `
           <div class="blog-card-img">
-            <img src="${post.image}" alt="${escapeHtml(post.title)}" loading="lazy" onerror="this.onerror=null; this.src='images/gold_bar.png';">
+            <img src="${imgUrl}" alt="${escapeHtml(post.title)}" loading="lazy" onerror="this.onerror=null; this.src='images/gold_bar.png';">
             <span class="blog-card-tag">${escapeHtml(post.category)}</span>
           </div>
           <div class="blog-card-content">

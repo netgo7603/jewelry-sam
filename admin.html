@@ -672,7 +672,6 @@
       resetForm();
       renderPostTable();
       switchTab('posts-tab');
-      downloadPostsJsonPrompt();
     }
 
     function editPost(id) {
@@ -717,14 +716,9 @@
       currentPosts = currentPosts.filter(p => p.id !== id);
       savePosts(currentPosts);
       renderPostTable();
-      downloadPostsJsonPrompt();
     }
 
-    function downloadPostsJsonPrompt() {
-      if (confirm('💡 변경된 글 목록을 posts.json 파일로 저장/다운로드 하시겠습니까?\n(다운로드한 posts.json을 프로젝트 폴더에 저장/푸시하면 서버에 영구 반영됩니다.)')) {
-        downloadPostsJson();
-      }
-    }
+
 
     function downloadPostsJson() {
       const dataStr = JSON.stringify(currentPosts, null, 2);

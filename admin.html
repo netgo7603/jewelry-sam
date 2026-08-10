@@ -882,8 +882,9 @@
       sessionBox.innerHTML = '';
       sessions.forEach(sess => {
         const isActive = sess.sessionId === activeSessionId;
+        const isEnded = sess.lastText && sess.lastText.includes('종료');
         const div = document.createElement('div');
-        div.style.cssText = `background: ${isActive ? 'rgba(201,169,110,0.25)' : 'rgba(201,169,110,0.08)'}; border: 1px solid ${isActive ? '#C9A96E' : 'rgba(201,169,110,0.2)'}; padding: 0.75rem; border-radius: 8px; margin-bottom: 0.5rem; cursor: pointer; transition: all 0.2s ease;`;
+        div.style.cssText = `background: ${isActive ? 'rgba(201,169,110,0.25)' : 'rgba(201,169,110,0.08)'}; border: 1px solid ${isActive ? '#C9A96E' : 'rgba(201,169,110,0.2)'}; padding: 0.75rem; border-radius: 8px; margin-bottom: 0.5rem; cursor: pointer; transition: all 0.2s ease; opacity: ${isEnded ? '0.7' : '1'};`;
         div.onclick = () => {
           activeSessionId = sess.sessionId;
           fetchAdminLiveChatMessages();
@@ -891,9 +892,9 @@
         };
 
         div.innerHTML = `
-          <div style="font-weight: 600; font-size: 0.85rem; color: #F5F0E8; display:flex; justify-content:space-between;">
+          <div style="font-weight: 600; font-size: 0.85rem; color: #F5F0E8; display:flex; justify-content:space-between; align-items:center;">
             <span>👤 ${escapeHtml(sess.userId || '방문 고객')}</span>
-            <span style="font-size:0.7rem; color:#9C9489;">${sess.lastTime || ''}</span>
+            <span style="font-size:0.7rem; color:${isEnded ? '#ef4444' : '#4ade80'};">${isEnded ? '🔴 종료' : '● 진행 중'}</span>
           </div>
           <div style="font-size: 0.75rem; color: #9C9489; margin-top: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
             "${escapeHtml(sess.lastText || '')}"
@@ -984,7 +985,9 @@
         await fetch(`${API_BASE}/api/live-chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(chatObj)
+          body: JSON.stringify({
+            ...chatObj
+          })
         });
       } catch(e) {}
 

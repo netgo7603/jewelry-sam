@@ -256,12 +256,17 @@
   window.JewelrySamWidget = { open: () => toggleWidget(true) };
 
   let isLiveMode = false;
-  let currentSessionId = localStorage.getItem('sam_session_id');
-  if (!currentSessionId) {
+  let currentSessionId = '';
+  let currentUserId = '';
+
+  function createNewSession() {
     currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
     localStorage.setItem('sam_session_id', currentSessionId);
+    currentUserId = '고객_' + currentSessionId.substring(currentSessionId.length - 4);
   }
-  const currentUserId = '고객_' + currentSessionId.substring(currentSessionId.length - 4);
+
+  // Init initial session
+  createNewSession();
 
   function endLiveChat(byAdmin) {
     if (!isLiveMode) return;
@@ -270,8 +275,8 @@
     agentBtn.style.display = 'block';
 
     const msgText = byAdmin 
-      ? '🔴 상담원에 의해 1:1 상담이 종료되었습니다.\n다시 24h AI 챗봇 모드로 전환됩니다.' 
-      : '🔴 1:1 상담이 종료되었습니다. 24h AI 챗봇 모드로 전환됩니다.';
+      ? '🔴 상담원에 의해 1:1 상담이 종료되었습니다.\n다시 24h AI 챗봇 모드로 전환되었습니다.' 
+      : '🔴 1:1 상담이 종료되었습니다. 24h AI 챗봇 모드로 전환되었습니다.';
 
     appendMsg(msgText, 'bot');
 
@@ -290,6 +295,9 @@
         }).catch(() => {});
       } catch(e) {}
     }
+
+    // Refresh session ID so the next request creates a fresh conversation room!
+    createNewSession();
   }
 
   endBtn.onclick = () => endLiveChat(false);
@@ -342,12 +350,15 @@
     }
   };
 
-  // 6. Connect to Live Agent (Switch to Live Mode)
+  // 6. Connect to Live Agent (Switch to Live Mode & Create Fresh Room Session)
   agentBtn.onclick = async () => {
+    // Generate fresh session ID for new conversation request
+    createNewSession();
+
     isLiveMode = true;
     endBtn.style.display = 'block';
     agentBtn.style.display = 'none';
-    appendMsg('🟢 **실시간 1:1 상담원 모드**로 전환되었습니다.\nAI 챗봇 응답이 정지되고 상담원이 직접 대화에 참여합니다.', 'bot');
+    appendMsg(`🟢 **새로운 실시간 1:1 상담 (${currentUserId})** 이 요청되었습니다.\n상담원이 연결될 때까지 잠시만 기다려 주세요!`, 'bot');
     
     try {
       await fetch(`${API_HOST}/api/live-chat`, {
@@ -357,7 +368,7 @@
           sessionId: currentSessionId,
           isAdmin: false,
           userId: currentUserId,
-          text: '🧑‍💻 고객님이 실시간 1:1 상담원 연결을 요청하셨습니다.'
+          text: '🧑‍💻 고객님이 실시간 1:1 상담원 연결을 새로 요청하셨습니다.'
         })
       });
     } catch(e) {}

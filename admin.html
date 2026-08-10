@@ -338,6 +338,93 @@
       margin-top: 0.75rem;
       display: none;
     }
+
+    /* Mobile Responsive Enhancements */
+    @media (max-width: 768px) {
+      .admin-header {
+        padding: 1rem 0;
+      }
+      .admin-nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+      .admin-logo {
+        font-size: 1.1rem;
+      }
+      .admin-nav-right {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .admin-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+      }
+      .btn-gen-xml {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+      }
+      .admin-container {
+        margin: 1rem auto;
+        padding: 0 0.75rem;
+      }
+      .admin-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 0.75rem;
+        gap: 0.5rem;
+        -webkit-overflow-scrolling: touch;
+      }
+      .admin-tab-btn {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.85rem;
+        flex-shrink: 0;
+      }
+      .admin-card {
+        padding: 1.25rem 1rem;
+        border-radius: 12px;
+      }
+      .admin-card-title {
+        font-size: 1.15rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+      .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 8px;
+        border: 1px solid rgba(201, 169, 110, 0.15);
+      }
+      .post-table th, .post-table td {
+        padding: 0.6rem 0.5rem;
+        font-size: 0.8rem;
+        white-space: nowrap;
+      }
+      .form-input, .form-select {
+        font-size: 16px !important; /* Prevents iOS Safari auto-zoom on input focus */
+        padding: 0.75rem 0.9rem;
+      }
+      .mobile-stack {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+      .mobile-stack label {
+        justify-content: center !important;
+        text-align: center;
+      }
+      .ql-container.ql-snow {
+        min-height: 200px;
+      }
+      .login-box {
+        padding: 2rem 1.25rem;
+        border-radius: 16px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -371,7 +458,7 @@
         <img src="images/favicon.png" alt="주얼리 샘 로고">
         주얼리 샘 관리자 센터
       </a>
-      <div style="display: flex; gap: 1rem; align-items: center;">
+      <div class="admin-nav-right">
         <span class="admin-badge">Blog & SEO System</span>
         <a href="index.html" target="_blank" class="btn-gen-xml">홈페이지 바로가기 ↗</a>
         <button class="btn-gen-xml" style="border-color: #ef4444; color: #ef4444;" onclick="handleAdminLogout()">🔒 로그아웃</button>
@@ -398,21 +485,23 @@
           이곳에 등록된 글은 메인 홈페이지의 [블로그] 섹션에 즉시 노출되며, 검색엔진(네이버, 구글)에 수집됩니다.
         </p>
 
-        <table class="post-table">
-          <thead>
-            <tr>
-              <th>순번</th>
-              <th>포스트 번호 (ID)</th>
-              <th>제목</th>
-              <th>카테고리</th>
-              <th>작성일</th>
-              <th>관리</th>
-            </tr>
-          </thead>
-          <tbody id="admin-post-list">
-            <!-- Dynamic Posts render -->
-          </tbody>
-        </table>
+        <div class="table-wrapper">
+          <table class="post-table">
+            <thead>
+              <tr>
+                <th>순번</th>
+                <th>포스트 번호 (ID)</th>
+                <th>제목</th>
+                <th>카테고리</th>
+                <th>작성일</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="admin-post-list">
+              <!-- Dynamic Posts render -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -440,9 +529,9 @@
 
           <div class="form-group">
             <label class="form-label" for="post-image">대표 이미지 (Cloudflare R2 자동 저장) *</label>
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <div class="mobile-stack" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
               <input type="text" id="post-image" class="form-input" value="images/gold_bar.png" placeholder="R2 이미지 URL 또는 사진 파일 선택" required>
-              <label for="post-file-input" class="btn-gen-xml" style="white-space: nowrap; cursor: pointer; display: inline-flex; align-items: center; background: rgba(201,169,110,0.15);">☁️ Cloudflare R2에 사진 업로드</label>
+              <label for="post-file-input" class="btn-gen-xml" style="white-space: nowrap; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; background: rgba(201,169,110,0.15); padding: 0.75rem 1rem;">☁️ Cloudflare R2에 사진 업로드</label>
               <input type="file" id="post-file-input" accept="image/*" style="display: none;" onchange="uploadToCloudflareR2(event)">
             </div>
             <div id="image-preview-container" style="margin-top: 0.5rem; display: none;">

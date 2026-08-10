@@ -1,2 +1,2 @@
-/api/* https://jewelry-sam-api.lymin80.workers.dev/api/:splat 302
-/r2/* https://jewelry-sam-api.lymin80.workers.dev/r2/:splat 302
+# Cloudflare Pages Redirect Rules
+# API calls are made directly to Worker domain: https://jewelry-sam-api.lymin80.workers.dev

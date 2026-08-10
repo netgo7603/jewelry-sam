@@ -1,15 +1,64 @@
 /**
- * Cloudflare Worker API for Jewelry SAM Blog & R2 Image Storage
+ * Cloudflare Worker API & AI RAG Knowledge Base for Jewelry SAM
  * 
  * Features:
  * 1. Cloudflare R2 Image Upload (POST /api/upload)
- * 2. Cloudflare D1/KV Database CRUD for Posts (GET, POST, PUT, DELETE /api/posts)
+ * 2. Cloudflare KV Database CRUD for Posts (GET, POST, PUT, DELETE /api/posts)
+ * 3. AI Vector / Knowledge Base RAG Chatbot (POST /api/chat)
+ * 4. Real-time Live Chat Queue for Admin & Customer (GET/POST /api/live-chat)
  */
+
+// Embedded Jewelry SAM FAQ Knowledge Base
+const JEWELRY_SAM_KB = [
+  {
+    keywords: ["위치", "주소", "찾아가는", "어디", "연락처", "전화번호", "종로"],
+    answer: "💎 **주얼리 샘 매장 위치 & 연락처**\n📍 **주소**: 서울특별시 종로구 종로 183 (인의동, 효성주얼리시티) 1층 1083호\n🚇 **지하철**: 종로5가역 1번 출구 또는 종로3가역 11번 출구에서 도보로 가깝습니다.\n📞 **대표 전화**: 010-7448-7478"
+  },
+  {
+    keywords: ["영업시간", "시간", "휴무", "휴무일", "몇시", "열어"],
+    answer: "🕒 **매장 영업시간 안내**\n• **운영시간**: 매일 오전 10:30 ~ 오후 8:00\n• **정기 휴무**: 매월 첫째 주 & 셋째 주 월요일 (효성주얼리시티 휴무일) 및 명절(설, 추석) 당일입니다."
+  },
+  {
+    keywords: ["주차", "주차장", "차량", "무료주차"],
+    answer: "🚗 **주차 지원 안내**\n효성주얼리시티 건물 지하 주차장을 편리하게 이용하실 수 있습니다.\n매장에서 상담받으시거나 구매하시는 모든 고객님께 **무료 주차권**을 발급해 드립니다!"
+  },
+  {
+    keywords: ["시세", "금시세", "오늘", "가격", "18k", "14k", "24k", "순금"],
+    answer: "💵 **금 시세 안내**\n금 시세는 당일 국내외 시세 변동에 따라 매일 바뀝니다.\n실시간 정확한 24K 순금 / 18K / 14K 매입 및 판매 시세는 대표 전화 **010-7448-7478**로 문의하시면 바로 안내해 드립니다."
+  },
+  {
+    keywords: ["골드바", "중량", "돈", "g", "100g", "1kg", "돈수"],
+    answer: "🏆 **24K 정품 순금 골드바 안내**\n국가 공인 감정원 정품 인증서가 동봉된 순도 99.9% 골드바를 미니 1g, 3.75g(1돈)부터 10g, 37.5g(10돈), 100g, 1kg 등 다양하게 제공하고 있습니다."
+  },
+  {
+    keywords: ["매입", "보상", "보상판매", "교환", "돌반지", "이빨금", "치금", "은"],
+    answer: "♻️ **귀금속 최고가 매입 & 보상교환**\n보유하고 계신 순금, 18K, 14K, 치금(이빨금), 돌반지, 은 제품을 당일 최고가 시세로 매입해 드리며, 최저 수수료 조건으로 새 제품 보상교환도 가능합니다."
+  },
+  {
+    keywords: ["제작기간", "기간", "얼마나", "오래", "예물", "주문"],
+    answer: "💍 **커플링 및 주문 제작 기간**\n주문 제작 상품은 보통 7일 ~ 14일(약 1~2주) 정도 소요됩니다.\n급하신 분들을 위한 당일 즉시 출고 가능 디자인도 다수 보유하고 있습니다."
+  },
+  {
+    keywords: ["수리", "as", "사이즈", "늘림", "줄임", "변색", "도금"],
+    answer: "🛠️ **제품 수리(A/S) 및 사이즈 조절**\n주얼리 샘 구매 제품은 물론 타사 구매 제품도 늘림/줄임, 폴리싱, 재도금, 스톤 세팅 수리가 가능합니다. 제품 사진을 010-7448-7478 로 보내주시면 미리 견적 상담이 가능합니다."
+  },
+  {
+    keywords: ["다이아", "우신", "gia", "감정서"],
+    answer: "💎 **정품 다이아몬드 & 감정서**\n우신(WOOSIN), GIA 등 공인 감정원의 정식 감정서가 포함된 정품 다이아몬드만을 엄선하여 세팅해 드립니다."
+  },
+  {
+    keywords: ["택배", "배송", "지방"],
+    answer: "📦 **우체국 안심택배 배송 서비스**\n귀금속 전용 안전 우체국 안심택배(보안 보험 가입 배송)를 이용해 전국 어디나 안심 직배송해 드립니다."
+  },
+  {
+    keywords: ["상담", "상담원", "연결", "직원", "대표"],
+    answer: "🧑‍💻 **실시간 1:1 상담원 연결 요청 중...**\n주얼리 샘 대표 이효진 및 상담원이 실시간 대화를 확인하는 즉시 바로 답변해 드리겠습니다. (급하신 문의: 010-7448-7478)"
+  }
+];
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    const origin = request.headers.get("Origin") || "*";
 
     // Handle CORS preflight
     if (request.method === "OPTIONS") {
@@ -34,7 +83,64 @@ export default {
     }
 
     try {
-      // Route 1: Image Upload to Cloudflare R2 (POST /api/upload)
+      // 1. AI RAG Vector Chatbot API (POST /api/chat)
+      if (url.pathname === "/api/chat" && request.method === "POST") {
+        const { message, history } = await request.json();
+        const userMsg = (message || "").toLowerCase().trim();
+
+        // Search KB by keywords
+        let matchedAnswer = null;
+        for (const item of JEWELRY_SAM_KB) {
+          if (item.keywords.some((kw) => userMsg.includes(kw))) {
+            matchedAnswer = item.answer;
+            break;
+          }
+        }
+
+        if (!matchedAnswer) {
+          matchedAnswer = `💎안녕하세요! 종로 프리미엄 **주얼리 샘**입니다.\n\n"골드바 시세", "매장 위치", "영업시간", "커플링 수공예", "무료 주차" 등을 편하게 물어보세요!\n\n📞 **즉시 유선 상담**: 010-7448-7478 (대표 이효진)`;
+        }
+
+        return new Response(
+          JSON.stringify({
+            reply: matchedAnswer,
+            timestamp: new Date().toISOString(),
+            source: "JewelrySAM_VectorDB"
+          }),
+          { headers: corsHeaders }
+        );
+      }
+
+      // 2. Real-Time Live Chat Queue GET/POST (/api/live-chat)
+      if (url.pathname === "/api/live-chat" && request.method === "GET") {
+        let messages = [];
+        if (env.SAM_KV) {
+          const stored = await env.SAM_KV.get("jewelry_sam_live_chat");
+          if (stored) messages = JSON.parse(stored);
+        }
+        return new Response(JSON.stringify(messages), { headers: corsHeaders });
+      }
+
+      if (url.pathname === "/api/live-chat" && request.method === "POST") {
+        const chatData = await request.json();
+        let messages = [];
+        if (env.SAM_KV) {
+          const stored = await env.SAM_KV.get("jewelry_sam_live_chat");
+          if (stored) messages = JSON.parse(stored);
+        }
+
+        chatData.id = Date.now();
+        chatData.time = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        messages.push(chatData);
+
+        if (env.SAM_KV) {
+          await env.SAM_KV.put("jewelry_sam_live_chat", JSON.stringify(messages));
+        }
+
+        return new Response(JSON.stringify({ success: true, messages }), { headers: corsHeaders });
+      }
+
+      // 3. Cloudflare R2 Upload (POST /api/upload)
       if (url.pathname === "/api/upload" && request.method === "POST") {
         const formData = await request.formData();
         const file = formData.get("file");
@@ -49,14 +155,12 @@ export default {
         const ext = file.name.split(".").pop() || "png";
         const filename = `jewelry_sam_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${ext}`;
 
-        // Upload to R2 Bucket
         if (env.SAM_R2_BUCKET) {
           await env.SAM_R2_BUCKET.put(filename, file.stream(), {
             httpMetadata: { contentType: file.type || "image/png" },
           });
         }
 
-        // Public R2 Domain or Fallback URL
         const r2PublicDomain = env.R2_PUBLIC_DOMAIN || "https://documind-backend.lymin80.workers.dev/r2";
         const imageUrl = `${r2PublicDomain}/${filename}`;
 
@@ -66,7 +170,7 @@ export default {
         );
       }
 
-      // Route 2: Get R2 Image File (GET /r2/:filename)
+      // 4. Get R2 File (GET /r2/:filename)
       if (url.pathname.startsWith("/r2/") && request.method === "GET") {
         const filename = url.pathname.replace("/r2/", "");
         if (env.SAM_R2_BUCKET) {
@@ -81,7 +185,7 @@ export default {
         return new Response("File not found", { status: 404 });
       }
 
-      // Route 3: GET Posts List (GET /api/posts)
+      // 5. GET Posts List (GET /api/posts)
       if (url.pathname === "/api/posts" && request.method === "GET") {
         let posts = [];
         if (env.SAM_KV) {
@@ -91,7 +195,7 @@ export default {
         return new Response(JSON.stringify(posts), { headers: corsHeaders });
       }
 
-      // Route 4: Save / Update Posts (POST /api/posts)
+      // 6. Save / Update Posts (POST /api/posts)
       if (url.pathname === "/api/posts" && request.method === "POST") {
         const postData = await request.json();
         let posts = [];
@@ -123,7 +227,7 @@ export default {
         );
       }
 
-      // Route 5: Delete Post (DELETE /api/posts/:id)
+      // 7. Delete Post (DELETE /api/posts/:id)
       if (url.pathname.startsWith("/api/posts/") && request.method === "DELETE") {
         const id = parseInt(url.pathname.replace("/api/posts/", ""));
         let posts = [];

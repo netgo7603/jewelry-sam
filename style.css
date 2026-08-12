@@ -1018,9 +1018,9 @@ img {
 
 .cta-contact-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  max-width: 800px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  max-width: 1080px;
   margin: 3rem auto 0;
 }
 

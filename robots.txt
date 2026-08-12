@@ -1,5 +1,16 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
+Disallow: /admin/
 
-Sitemap: https://jewelrysam.kr/sitemap.xml
+# Google, Naver, Bing Crawlers Welcome
+User-agent: Googlebot
+Allow: /
+
+User-agent: Yeti
+Allow: /
+
+User-agent: bingbot
+Allow: /
+
+Sitemap: https://sam.lymin80.shop/sitemap.xml

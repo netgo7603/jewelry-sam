@@ -13,9 +13,9 @@
 
   window.JewelrySamWidgetLoaded = true;
 
-  const API_HOST = window.location.origin.includes('lymin80.shop') 
+  const API_HOST = window.location.origin.includes('lymin80') 
     ? window.location.origin 
-    : 'https://jewelry-sam-api.lymin80.workers.dev';
+    : 'https://sam.lymin80.shop';
 
   // 1. Host Container & Shadow DOM Creation for Style Isolation
   const container = document.createElement('div');
@@ -153,6 +153,27 @@
     }
     .agent-btn:hover { background: rgba(201, 169, 110, 0.25); }
 
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-self: center;
+      margin: 4px 0;
+    }
+    .quick-btn {
+      background: rgba(201, 169, 110, 0.08);
+      border: 1px solid rgba(201, 169, 110, 0.2);
+      color: #C9A96E;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .quick-btn:hover { background: rgba(201, 169, 110, 0.2); border-color: #C9A96E; }
+
     .chat-input-area {
       padding: 14px 16px;
       background: #1A1614;
@@ -199,7 +220,7 @@
           <div class="status-dot"></div>
           <div>
             <div class="header-title">주얼리 샘 AI & 실시간 상담</div>
-            <div style="font-size:11px; color:#9C9489;">서울 종로 효성주얼리시티 1083호</div>
+            <div style="font-size:11px; color:#9C9489;">서울 종로 효성주얼리시티 1층 83호</div>
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
@@ -210,6 +231,10 @@
 
       <div class="chat-messages" id="samMessages">
         <div class="msg msg-bot">💎 안녕하세요! 종로 프리미엄 주얼리 샘 24h AI 상담원입니다.<br><br>금시세, 순금 골드바, 커플링, 다이아몬드, 위치 및 무료 주차 안내 등 궁금한 내용을 물어보세요!</div>
+        <div class="quick-actions">
+          <button class="quick-btn" onclick="sendQuickMsg('매장 위치 알려주세요')">📍 매장 위치</button>
+          <button class="quick-btn" onclick="sendQuickMsg('영업시간 알려주세요')">🕒 영업시간</button>
+        </div>
         <button class="agent-btn" id="samAgentBtn">🧑‍💻 실시간 1:1 상담원 연결 요청하기</button>
       </div>
 
@@ -241,10 +266,13 @@
     if (isChatOpen) {
       chatDrawer.classList.add('open');
       chatInput.focus();
-      startLiveChatSync();
+      // Only poll for admin messages when in live 1:1 mode
+      if (isLiveMode) {
+        startLiveChatSync();
+      }
     } else {
       chatDrawer.classList.remove('open');
-      if (pollInterval) clearInterval(pollInterval);
+      if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
     }
   }
 
@@ -290,7 +318,8 @@
             isAdmin: false,
             userId: currentUserId,
             isEnd: true,
-            text: '🔴 고객님이 1:1 상담을 종료하셨습니다.'
+            text: '🔴 고객님이 1:1 상담을 종료하셨습니다.',
+            isLiveMode: true
           })
         }).catch(() => {});
       } catch(e) {}
@@ -303,27 +332,27 @@
   endBtn.onclick = () => endLiveChat(false);
 
   // 5. Send Message Handler
-  chatForm.onsubmit = async (e) => {
-    e.preventDefault();
-    const text = chatInput.value.trim();
+  async function handleSendMessage(text) {
     if (!text) return;
 
     appendMsg(text, 'user');
     chatInput.value = '';
 
-    // Always post user message to admin live chat queue with sessionId
-    try {
-      fetch(`${API_HOST}/api/live-chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sessionId: currentSessionId,
-          isAdmin: false,
-          userId: currentUserId,
-          text: text
-        })
-      }).catch(() => {});
-    } catch(e) {}
+    if (isLiveMode) {
+      try {
+        fetch(`${API_HOST}/api/live-chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: currentSessionId,
+            isAdmin: false,
+            userId: currentUserId,
+            text: text,
+            isLiveMode: isLiveMode
+          })
+        }).catch(() => {});
+      } catch(e) {}
+    }
 
     // If in Live Mode, DO NOT invoke AI chatbot. Wait for admin response.
     if (isLiveMode) {
@@ -348,7 +377,22 @@
         appendMsg('💎 문의하신 내용을 접수 중입니다. 010-7448-7478 로 전화주시면 즉시 1:1 안내해 드립니다!', 'bot');
       }
     }
+  }
+
+  chatForm.onsubmit = (e) => {
+    e.preventDefault();
+    handleSendMessage(chatInput.value.trim());
   };
+
+  // Add event listeners for quick buttons (since inline onclick doesn't work well in Shadow DOM)
+  wrapper.querySelectorAll('.quick-btn').forEach(btn => {
+    btn.removeAttribute('onclick'); // Remove invalid inline handler
+    btn.addEventListener('click', () => {
+      const text = btn.innerText;
+      if (text.includes('매장 위치')) handleSendMessage('매장 위치 알려주세요');
+      if (text.includes('영업시간')) handleSendMessage('영업시간 알려주세요');
+    });
+  });
 
   // 6. Connect to Live Agent (Switch to Live Mode & Create Fresh Room Session)
   agentBtn.onclick = async () => {
@@ -368,10 +412,14 @@
           sessionId: currentSessionId,
           isAdmin: false,
           userId: currentUserId,
-          text: '🧑‍💻 고객님이 실시간 1:1 상담원 연결을 새로 요청하셨습니다.'
+          text: '🧑‍💻 고객님이 실시간 1:1 상담원 연결을 새로 요청하셨습니다.',
+          isAgentRequest: true
         })
       });
     } catch(e) {}
+
+    // Start polling for admin responses now that we're in live mode
+    startLiveChatSync();
   };
 
   function appendMsg(text, type) {

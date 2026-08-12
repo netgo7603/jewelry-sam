@@ -8,7 +8,7 @@ const DEFAULT_JEWELRY_SAM_KB = [
     id: 1,
     category: "위치/연락처",
     keywords: ["위치", "주소", "찾아가는", "어디", "연락처", "전화번호", "종로"],
-    answer: "💎 **주얼리 샘 매장 위치 & 연락처**\n📍 **주소**: 서울특별시 종로구 종로 183 (인의동, 효성주얼리시티) 1층 1083호\n🚇 **지하철**: 종로5가역 1번 출구 또는 종로3가역 11번 출구에서 도보로 가깝습니다.\n📞 **대표 전화**: 010-7448-7478"
+    answer: "💎 **주얼리 샘 매장 위치 & 연락처**\n📍 **주소**: 서울특별시 종로구 종로 183 (인의동, 효성주얼리시티) 1층 83호\n🚇 **지하철**: 종로5가역 1번 출구 또는 종로3가역 11번 출구에서 도보로 가깝습니다.\n📞 **대표 전화**: 010-7448-7478"
   },
   {
     id: 2,
@@ -37,8 +37,8 @@ const DEFAULT_JEWELRY_SAM_KB = [
   {
     id: 6,
     category: "매입/보상교환",
-    keywords: ["매입", "보상", "보상판매", "교환", "돌반지", "이빨금", "치금", "은"],
-    answer: "♻️ **귀금속 최고가 매입 & 보상교환**\n보유하고 계신 순금, 18K, 14K, 치금(이빨금), 돌반지, 은 제품을 당일 최고가 시세로 매입해 드리며, 최저 수수료 조건으로 새 제품 보상교환도 가능합니다."
+    keywords: ["매입", "보상", "보상판매", "교환", "돌반지", "이빨금", "치금", "은", "주물금", "금뱃지", "뱃지", "골프공", "악세사리", "악세서리", "14k", "18k", "24k", "10k", "덩어리금", "중고금", "순금아닌금"],
+    answer: "♻️ **귀금속 최고가 매입 & 보상교환**\n보유하고 계신 24K 순금, 18K, 14K, 10K, 금 악세사리, 금 뱃지, 순금 골프공, 주물금(덩어리금), 치금(이빨금), 돌반지, 은 수저/실버바를 당일 최고가 시세로 빠르고 정확하게 매입해 드리며, 최저 수수료 조건으로 새 주얼리 보상교환도 가능합니다."
   },
   {
     id: 7,
@@ -63,6 +63,84 @@ const DEFAULT_JEWELRY_SAM_KB = [
     category: "배송",
     keywords: ["택배", "배송", "지방"],
     answer: "📦 **우체국 안심택배 배송 서비스**\n귀금속 전용 안전 우체국 안심택배(보안 보험 가입 배송)를 이용해 전국 어디나 안심 직배송해 드립니다."
+  },
+  {
+    id: 11,
+    category: "돌반지/돌선물",
+    keywords: ["돌반지", "돌선물", "첫돌", "백일반지", "돌팔찌", "반돈", "한돈", "1돈", "아기반지"],
+    answer: "👶 **순금 돌반지 & 돌선물 안내**\n• **종류**: 24K 순금 돌반지 (반돈 1.875g, 1돈 3.75g), 순금 돌팔찌, 캐릭터 돌반지, 왕관 돌반지, 이니셜 각인 돌반지\n• **보증**: 국가 공인 감정원 정품 24K 순도 99.9% 보증서 동봉\n• **혜택**: 예쁜 고급 케이스 무료 선물 포장 & 이니셜 각인 무료 서비스"
+  },
+  {
+    id: 12,
+    category: "주물금/치금/악세사리 매입",
+    keywords: ["주물금", "치금", "이빨금", "금뱃지", "뱃지", "골프공", "금골프공", "금악세사리", "금악세서리", "14k매입", "18k매입", "순금아닌금", "잡금", "덩어리금"],
+    answer: "💰 **주물금 · 치금 · 금 뱃지 · 금 악세사리 전문 매입**\n• **매입 대상**: 24K 순금, 18K·14K·10K 금 악세사리(반지, 목걸이, 팔찌, 펜던트), 기업/단체 금 뱃지, 순금 골프공, 주물금(덩어리금), 치금(크라운, 금이빨), 순금이 아닌 잡금, 925은/실버바\n• **매입 방법**: 당일 종로 최상위 국전 시세 기준 최고가 측정 후 현장에서 즉시 계좌 입금해 드립니다."
+  }
+];
+
+const DEFAULT_JEWELRY_SAM_GALLERY = [
+  {
+    id: 1,
+    name: "순금 골드바",
+    category: "goldbar",
+    tag: "Best Seller",
+    image: "images/gold_bar.png",
+    description: "순도 99.9% 프리미엄 골드바. 선물용·투자용 최적의 순금 제품",
+    featured: true
+  },
+  {
+    id: 2,
+    name: "캐릭터 골드바",
+    category: "character",
+    tag: "인기",
+    image: "images/character_gold_bar.png",
+    description: "귀여운 캐릭터 디자인의 미니 골드바",
+    featured: false
+  },
+  {
+    id: 3,
+    name: "커플링 세트",
+    category: "ring",
+    tag: "추천",
+    image: "images/couple_ring_set.png",
+    description: "영원한 사랑의 약속, 이니셜 각인 가능",
+    featured: false
+  },
+  {
+    id: 4,
+    name: "귀걸이 컬렉션",
+    category: "earring",
+    tag: "",
+    image: "images/earrings.png",
+    description: "섬세한 디테일의 프리미엄 귀걸이",
+    featured: false
+  },
+  {
+    id: 5,
+    name: "목걸이 컬렉션",
+    category: "necklace",
+    tag: "",
+    image: "images/necklace.png",
+    description: "고급스러운 체인과 정교한 펜던트",
+    featured: false
+  },
+  {
+    id: 6,
+    name: "팔찌 컬렉션",
+    category: "bracelet",
+    tag: "",
+    image: "images/bracelet.png",
+    description: "손목을 우아하게 감싸는 골드 팔찌",
+    featured: false
+  },
+  {
+    id: 7,
+    name: "순금 돌반지 컬렉션",
+    category: "dolring",
+    tag: "첫돌 선물",
+    image: "images/dolring.png",
+    description: "첫돌·백일 기념 24K 순금 돌반지 & 돌팔찌. 반돈·1돈 정품 보증",
+    featured: true
   }
 ];
 
@@ -84,8 +162,7 @@ export default {
     // Serve static website assets (HTML, CSS, JS) for non-API routes
     const isApiOrR2 = url.pathname.startsWith("/api/") || url.pathname.startsWith("/r2/");
     if (!isApiOrR2 && env.ASSETS) {
-      const res = await env.ASSETS.fetch(request);
-      if (res.status < 400) return res;
+      return env.ASSETS.fetch(request);
     }
 
     const pathname = url.pathname.replace(/\/$/, "");
@@ -97,6 +174,16 @@ export default {
           if (stored) return JSON.parse(stored);
         }
         return DEFAULT_JEWELRY_SAM_KB;
+      }
+
+      async function getActiveGallery() {
+        if (env.SAM_KV) {
+          const stored = await env.SAM_KV.get("jewelry_sam_gallery");
+          if (stored) {
+            try { return JSON.parse(stored); } catch(e) {}
+          }
+        }
+        return DEFAULT_JEWELRY_SAM_GALLERY;
       }
 
       // Send Telegram notification when customer requests live chat or sends message
@@ -117,7 +204,7 @@ export default {
 
         if (!botToken || !chatId) return;
 
-        const text = `🔔 [주얼리 샘 1:1 고객 상담 요청]\n\n👤 고객: ${chatData.userId || '방문 고객'}\n💬 내용: ${chatData.text}\n⏰ 시간: ${chatData.time || new Date().toLocaleTimeString('ko-KR')}\n\n👉 관리자 센터: https://sam.lymin80.shop/admin.html`;
+        const text = `🔔 [주얼리 샘 1:1 고객 상담 요청]\n\n👤 고객: ${chatData.userId || '방문 고객'}\n💬 내용: ${chatData.text}\n⏰ 시간: ${chatData.time || new Date().toLocaleTimeString('ko-KR', { timeZone: 'Asia/Seoul' })}\n\n👉 관리자 센터: https://sam.lymin80.shop/admin.html`;
 
         try {
           await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
@@ -190,12 +277,28 @@ export default {
         return new Response(JSON.stringify({ success: true, kb: newKbList }), { headers: corsHeaders });
       }
 
+      // 2-1. GET/POST Gallery for Admin & Main Site (GET, POST /api/gallery)
+      if (url.pathname === "/api/gallery" && request.method === "GET") {
+        const galleryList = await getActiveGallery();
+        return new Response(JSON.stringify(galleryList), { headers: corsHeaders });
+      }
+
+      if (url.pathname === "/api/gallery" && request.method === "POST") {
+        const newGallery = await request.json();
+        if (env.SAM_KV) {
+          await env.SAM_KV.put("jewelry_sam_gallery", JSON.stringify(newGallery));
+        }
+        return new Response(JSON.stringify({ success: true, gallery: newGallery }), { headers: corsHeaders });
+      }
+
       // 3. GET Sessions List for Admin (GET /api/live-chat/sessions)
       if (url.pathname === "/api/live-chat/sessions" && request.method === "GET") {
         let messages = [];
         if (env.SAM_KV) {
           const stored = await env.SAM_KV.get("jewelry_sam_live_chat");
-          if (stored) messages = JSON.parse(stored);
+          if (stored) {
+            messages = JSON.parse(stored).filter(m => Date.now() - (m.id || 0) < 24 * 60 * 60 * 1000);
+          }
         }
 
         const sessionMap = {};
@@ -207,16 +310,35 @@ export default {
               userId: m.userId || '방문 고객',
               lastText: m.text,
               lastTime: m.time,
-              unread: 0
+              unread: 0,
+              isLive: m.isLiveMode || m.isAgentRequest || m.isAdmin
             };
           } else {
             sessionMap[sid].lastText = m.text;
             sessionMap[sid].lastTime = m.time;
+            if (m.isLiveMode || m.isAgentRequest || m.isAdmin) {
+              sessionMap[sid].isLive = true;
+            }
           }
         });
 
-        const sessions = Object.values(sessionMap).reverse();
+        const sessions = Object.values(sessionMap).filter(s => s.isLive).reverse();
         return new Response(JSON.stringify(sessions), { headers: corsHeaders });
+      }
+
+      // 3-1. DELETE old chatbot-only data from KV (/api/live-chat/purge)
+      if (url.pathname === "/api/live-chat/purge" && request.method === "POST") {
+        if (env.SAM_KV) {
+          const stored = await env.SAM_KV.get("jewelry_sam_live_chat");
+          if (stored) {
+            const all = JSON.parse(stored);
+            // Keep only messages that belong to real 1:1 sessions (have isLiveMode, isAgentRequest, or isAdmin flag)
+            const cleaned = all.filter(m => m.isLiveMode || m.isAgentRequest || m.isAdmin || m.isEnd);
+            await env.SAM_KV.put("jewelry_sam_live_chat", JSON.stringify(cleaned));
+            return new Response(JSON.stringify({ success: true, before: all.length, after: cleaned.length }), { headers: corsHeaders });
+          }
+        }
+        return new Response(JSON.stringify({ success: true, before: 0, after: 0 }), { headers: corsHeaders });
       }
 
       // 4. GET/POST Live Chat Messages (/api/live-chat)
@@ -225,7 +347,9 @@ export default {
         let messages = [];
         if (env.SAM_KV) {
           const stored = await env.SAM_KV.get("jewelry_sam_live_chat");
-          if (stored) messages = JSON.parse(stored);
+          if (stored) {
+            messages = JSON.parse(stored).filter(m => Date.now() - (m.id || 0) < 24 * 60 * 60 * 1000);
+          }
         }
 
         if (targetSessionId) {
@@ -237,20 +361,34 @@ export default {
 
       if (url.pathname === "/api/live-chat" && request.method === "POST") {
         const chatData = await request.json();
+        
+        // Ignore messages from cached clients that are purely chatbot interactions
+        if (!chatData.isAdmin && !chatData.isAgentRequest && !chatData.isLiveMode) {
+          return new Response(JSON.stringify({ success: true, ignored: true }), { headers: corsHeaders });
+        }
+
         let messages = [];
         if (env.SAM_KV) {
           const stored = await env.SAM_KV.get("jewelry_sam_live_chat");
-          if (stored) messages = JSON.parse(stored);
+          if (stored) {
+            messages = JSON.parse(stored).filter(m => Date.now() - (m.id || 0) < 24 * 60 * 60 * 1000);
+          }
         }
 
         chatData.id = Date.now();
-        chatData.time = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        chatData.time = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Seoul' });
         if (!chatData.sessionId) {
           chatData.sessionId = 'default';
         }
         messages.push(chatData);
+        
+        // BUG FIX: Actually save the updated messages array back to KV database!
+        if (env.SAM_KV) {
+          await env.SAM_KV.put("jewelry_sam_live_chat", JSON.stringify(messages));
+        }
 
-        if (!chatData.isAdmin) {
+        // Only send telegram notification on initial 1:1 agent connection request
+        if (!chatData.isAdmin && chatData.isAgentRequest) {
           ctx.waitUntil(sendTelegramNotification(chatData, env));
         }
 
@@ -282,7 +420,7 @@ export default {
           await sendTelegramNotification({
             userId: '시스템 테스트',
             text: '🎉 종로 주얼리 샘 텔레그램 알림 봇 연동에 성공했습니다!',
-            time: new Date().toLocaleTimeString('ko-KR')
+            time: new Date().toLocaleTimeString('ko-KR', { timeZone: 'Asia/Seoul' })
           }, env);
         }
 

@@ -70,9 +70,11 @@
     }
 
     .admin-logo img {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
+      height: 38px;
+      width: auto;
+      object-fit: contain;
+      border-radius: 0;
+      border: none;
     }
 
     .admin-badge {
@@ -339,6 +341,24 @@
       display: none;
     }
 
+    .login-remember {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: #9C9489;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .login-remember input[type="checkbox"] {
+      accent-color: #C9A96E;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
     /* Scrollbar Customization for Live Chat */
     #admin-chat-messages::-webkit-scrollbar,
     #admin-chat-sessions::-webkit-scrollbar {
@@ -462,7 +482,7 @@
   <!-- Admin Login Overlay Gateway -->
   <div class="login-overlay" id="loginOverlay">
     <div class="login-box">
-      <img src="images/favicon.png" alt="주얼리 샘" style="width: 54px; height: 54px; border-radius: 50%;">
+      <img src="images/logo_transparent.png" alt="주얼리 샘" style="height: 60px; width: auto; object-fit: contain; margin-bottom: 0.5rem;">
       <h2 class="login-title">주얼리 샘 관리자 로그인</h2>
       <p style="font-size: 0.85rem; color: #9C9489; margin-bottom: 2rem;">관리자 계정 정보를 입력하세요.</p>
 
@@ -476,6 +496,10 @@
           <input type="password" id="login-pw" class="form-input" placeholder="비밀번호 입력" required>
         </div>
         <div class="login-error" id="loginErrorMsg">아이디 또는 비밀번호가 올바르지 않습니다.</div>
+        <label class="login-remember">
+          <input type="checkbox" id="login-remember-check">
+          자동 로그인
+        </label>
         <button type="submit" class="btn-submit" style="width: 100%; margin-top: 1.5rem;">로그인</button>
       </form>
     </div>
@@ -485,7 +509,7 @@
   <header class="admin-header">
     <div class="container admin-nav">
       <a href="index.html" class="admin-logo">
-        <img src="images/favicon.png" alt="주얼리 샘 로고">
+        <img src="images/logo_transparent.png" alt="주얼리 샘 로고">
         주얼리 샘 관리자 센터
       </a>
       <div class="admin-nav-right">
@@ -501,6 +525,7 @@
     <div class="admin-tabs">
       <button class="admin-tab-btn active" onclick="switchTab('posts-tab')">📝 블로그 글 관리</button>
       <button class="admin-tab-btn" onclick="switchTab('write-tab')">✏️ 새 글 작성하기</button>
+      <button class="admin-tab-btn" onclick="switchTab('gallery-tab')">🖼️ 갤러리/상품 관리</button>
       <button class="admin-tab-btn" onclick="switchTab('chat-tab')">💬 실시간 1:1 고객 상담 센터</button>
       <button class="admin-tab-btn" onclick="switchTab('telegram-tab')">🔔 텔레그램 실시간 알림 연동</button>
       <button class="admin-tab-btn" onclick="switchTab('seo-tab')">🔍 네이버/구글 검색등록 (SEO)</button>
@@ -588,6 +613,101 @@
           <div style="display: flex; gap: 1rem; margin-top: 2rem;">
             <button type="submit" class="btn-submit" id="btn-submit-post">포스트 발행하기</button>
             <button type="button" class="btn-gen-xml" onclick="cancelEdit()">취소</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB: Gallery & Product Management -->
+    <div id="gallery-tab" class="admin-tab-content">
+      <div class="admin-card">
+        <div class="admin-card-title">
+          <span>🖼️ 주얼리 갤러리 & 대표 상품 관리 (<strong id="db-gallery-count" style="color: #4ade80;">DB 0건</strong>)</span>
+          <div style="display:flex; gap: 0.5rem;">
+            <button class="btn-sm btn-edit" onclick="initAdminGallery()">🔄 DB 새로고침</button>
+            <button class="btn-submit" onclick="openGalleryModal()">+ 새 갤러리 상품 추가</button>
+          </div>
+        </div>
+        <p style="color: #9C9489; font-size: 0.85rem; margin-bottom: 1.5rem;">
+          메인 페이지의 <strong>주얼리 갤러리(Gallery)</strong> 섹션에 노출되는 상품 이미지, 이름, 카테고리, 뱃지 및 설명을 관리합니다.
+        </p>
+
+        <div style="overflow-x: auto;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 50px; text-align: center;">번호</th>
+                <th style="width: 80px; text-align: center;">이미지</th>
+                <th>상품명</th>
+                <th style="width: 120px; text-align: center;">카테고리</th>
+                <th style="width: 110px; text-align: center;">태그/뱃지</th>
+                <th style="width: 90px; text-align: center;">강조</th>
+                <th style="width: 140px; text-align: center;">관리</th>
+              </tr>
+            </thead>
+            <tbody id="admin-gallery-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gallery Item Edit/Create Modal Popup -->
+    <div class="login-overlay" id="galleryModal" style="display: none;">
+      <div class="login-box" style="max-width: 540px; text-align: left;">
+        <h3 id="gallery-modal-title" style="color: #F5F0E8; font-family: 'Playfair Display', serif; margin-bottom: 1.25rem;">✨ 갤러리 상품 등록</h3>
+        
+        <form onsubmit="saveGalleryItem(event)">
+          <div class="form-group">
+            <label class="form-label" for="gallery-name">상품명 *</label>
+            <input type="text" id="gallery-name" class="form-input" placeholder="예: 순금 골드바 10돈" required>
+          </div>
+
+          <div style="display: flex; gap: 1rem;">
+            <div class="form-group" style="flex: 1;">
+              <label class="form-label" for="gallery-category">카테고리 *</label>
+              <select id="gallery-category" class="form-input">
+                <option value="goldbar">🏆 골드바</option>
+                <option value="dolring">👶 순금 돌반지·돌선물</option>
+                <option value="character">🧸 캐릭터 골드바</option>
+                <option value="ring">💍 커플링</option>
+                <option value="earring">✨ 귀걸이</option>
+                <option value="necklace">📿 목걸이</option>
+                <option value="bracelet">💫 팔찌</option>
+              </select>
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label class="form-label" for="gallery-tag">태그/뱃지 (선택)</label>
+              <input type="text" id="gallery-tag" class="form-input" placeholder="예: Best Seller, 인기, 추천">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="gallery-image">상품 이미지 * (Cloudflare R2 또는 URL)</label>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <input type="text" id="gallery-image" class="form-input" placeholder="이미지 URL 입력 또는 파일 업로드" required oninput="updateGalleryImagePreview()">
+              <button type="button" class="btn-sm btn-edit" style="white-space: nowrap; padding: 0 1rem;" onclick="document.getElementById('gallery-file-input').click()">📁 이미지 업로드</button>
+            </div>
+            <input type="file" id="gallery-file-input" accept="image/*" style="display: none;" onchange="uploadGalleryImageToR2(event)">
+            <div id="gallery-preview-container" style="display: none; margin-top: 0.5rem;">
+              <img id="gallery-preview-img" src="" alt="미리보기" style="max-height: 120px; border-radius: 8px; border: 1px solid rgba(201,169,110,0.3);" onerror="this.parentElement.style.display='none'">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="gallery-desc">상품 설명 (선택)</label>
+            <textarea id="gallery-desc" class="form-input" style="height: 70px; resize: vertical;" placeholder="상품에 대한 간단한 설명을 입력하세요"></textarea>
+          </div>
+
+          <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" id="gallery-featured" style="accent-color: #C9A96E; width: 18px; height: 18px;">
+            <label for="gallery-featured" style="color: #F5F0E8; font-size: 0.9rem; cursor: pointer;">⭐ 갤러리 메인 대표 강조 항목 (큰 타일로 표시)</label>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem;">
+            <button type="button" class="btn-gen-xml" onclick="closeGalleryModal()">취소</button>
+            <button type="submit" class="btn-submit">💾 저장하기</button>
           </div>
         </form>
       </div>
@@ -897,11 +1017,263 @@
       } else if (tabId === 'telegram-tab') {
         fetchAdminTelegramConfig();
         if (liveChatTimer) { clearInterval(liveChatTimer); liveChatTimer = null; }
+      } else if (tabId === 'gallery-tab') {
+        initAdminGallery();
+        if (liveChatTimer) { clearInterval(liveChatTimer); liveChatTimer = null; }
       } else {
         if (liveChatTimer) {
           clearInterval(liveChatTimer);
           liveChatTimer = null;
         }
+      }
+    }
+
+    // ==========================================
+    // Gallery & Product Management JS Engine
+    // ==========================================
+    let currentGalleryItems = [];
+    let editingGalleryId = null;
+
+    async function initAdminGallery() {
+      try {
+        const resp = await fetch(`${API_BASE}/api/gallery?t=` + Date.now());
+        if (resp.ok) {
+          const items = await resp.json();
+          if (Array.isArray(items)) {
+            currentGalleryItems = items;
+          }
+        }
+      } catch (e) {
+        console.log('Gallery Fetch Error', e);
+      }
+      renderGalleryTable();
+    }
+
+    function renderGalleryTable() {
+      const tbody = document.getElementById('admin-gallery-tbody');
+      const countEl = document.getElementById('db-gallery-count');
+      if (countEl) countEl.textContent = `DB ${currentGalleryItems.length}건`;
+      if (!tbody) return;
+
+      if (currentGalleryItems.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #9C9489; padding: 2rem;">등록된 갤러리 상품이 없습니다.</td></tr>`;
+        return;
+      }
+
+      const catMap = {
+        goldbar: "🏆 골드바",
+        dolring: "👶 순금 돌반지",
+        character: "🧸 캐릭터 골드바",
+        ring: "💍 커플링",
+        earring: "✨ 귀걸이",
+        necklace: "📿 목걸이",
+        bracelet: "💫 팔찌"
+      };
+
+      tbody.innerHTML = currentGalleryItems.map((item, idx) => `
+        <tr>
+          <td style="text-align: center; color: #9C9489;">${idx + 1}</td>
+          <td style="text-align: center;">
+            <img src="${escapeHtml(item.image || 'images/gold_bar.png')}" alt="${escapeHtml(item.name)}" style="width: 48px; height: 48px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(201,169,110,0.3);">
+          </td>
+          <td style="font-weight: 600; color: #F5F0E8;">${escapeHtml(item.name)}</td>
+          <td style="text-align: center;"><span class="admin-badge">${catMap[item.category] || escapeHtml(item.category || '기타')}</span></td>
+          <td style="text-align: center;">${item.tag ? `<span style="background: rgba(201,169,110,0.2); color: #C9A96E; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">${escapeHtml(item.tag)}</span>` : '<span style="color:#666;">-</span>'}</td>
+          <td style="text-align: center;">${item.featured ? '⭐ 대표' : '-'}</td>
+          <td style="text-align: center;">
+            <button class="btn-sm btn-edit" onclick="openGalleryModal(${item.id})">✏️ 수정</button>
+            <button class="btn-sm btn-delete" onclick="deleteGalleryItem(${item.id})">🗑️ 삭제</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openGalleryModal(id = null) {
+      editingGalleryId = id;
+      const modal = document.getElementById('galleryModal');
+      const title = document.getElementById('gallery-modal-title');
+      const nameInput = document.getElementById('gallery-name');
+      const catSelect = document.getElementById('gallery-category');
+      const tagInput = document.getElementById('gallery-tag');
+      const imgInput = document.getElementById('gallery-image');
+      const previewImg = document.getElementById('gallery-preview-img');
+      const previewBox = document.getElementById('gallery-preview-container');
+      const descInput = document.getElementById('gallery-desc');
+      const featuredCheck = document.getElementById('gallery-featured');
+
+      if (id) {
+        title.textContent = '✏️ 갤러리 상품 수정';
+        const item = currentGalleryItems.find(g => g.id === id);
+        if (item) {
+          nameInput.value = item.name || '';
+          catSelect.value = item.category || 'goldbar';
+          tagInput.value = item.tag || '';
+          imgInput.value = item.image || '';
+          descInput.value = item.description || '';
+          featuredCheck.checked = !!item.featured;
+          if (item.image) {
+            previewImg.src = item.image;
+            previewBox.style.display = 'block';
+          } else {
+            previewBox.style.display = 'none';
+          }
+        }
+      } else {
+        title.textContent = '✨ 새 갤러리 상품 등록';
+        nameInput.value = '';
+        catSelect.value = 'goldbar';
+        tagInput.value = '';
+        imgInput.value = '';
+        descInput.value = '';
+        featuredCheck.checked = false;
+        previewBox.style.display = 'none';
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeGalleryModal() {
+      document.getElementById('galleryModal').style.display = 'none';
+    }
+
+    function updateGalleryImagePreview() {
+      const url = document.getElementById('gallery-image').value.trim();
+      const previewContainer = document.getElementById('gallery-preview-container');
+      const previewImg = document.getElementById('gallery-preview-img');
+      if (url && !url.includes('업로드 중')) {
+        previewImg.src = url;
+        previewContainer.style.display = 'block';
+      } else if (!url) {
+        previewContainer.style.display = 'none';
+      }
+    }
+
+    async function uploadGalleryImageToR2(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('이미지 파일만 선택 가능합니다.');
+        return;
+      }
+
+      const imgInput = document.getElementById('gallery-image');
+      const previewContainer = document.getElementById('gallery-preview-container');
+      const previewImg = document.getElementById('gallery-preview-img');
+
+      // Instant local preview via FileReader
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewImg.src = e.target.result;
+        previewContainer.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+
+      imgInput.value = '☁️ Cloudflare R2 업로드 중...';
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const resp = await fetch(`${API_BASE}/api/upload`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.success && data.url) {
+            imgInput.value = data.url;
+            previewImg.src = data.url;
+            previewContainer.style.display = 'block';
+            alert('✨ 이미지 Cloudflare R2 업로드 완료!\nR2 URL: ' + data.url);
+            return;
+          }
+        }
+      } catch (e) {
+        console.log('Gallery R2 Upload Error', e);
+      }
+
+      if (reader.result) {
+        imgInput.value = reader.result;
+        alert('사진 첨부 완료!');
+      } else {
+        alert('이미지 업로드에 실패했습니다.');
+      }
+    }
+
+    async function saveGalleryItem(e) {
+      e.preventDefault();
+      const name = document.getElementById('gallery-name').value.trim();
+      const category = document.getElementById('gallery-category').value;
+      const tag = document.getElementById('gallery-tag').value.trim();
+      const image = document.getElementById('gallery-image').value.trim();
+      const description = document.getElementById('gallery-desc').value.trim();
+      const featured = document.getElementById('gallery-featured').checked;
+
+      if (!name) {
+        alert('상품명을 입력해 주세요.');
+        return;
+      }
+      if (!image) {
+        alert('상품 이미지 URL을 입력하거나 파일을 업로드해 주세요.');
+        return;
+      }
+
+      let updatedList = [...currentGalleryItems];
+      if (editingGalleryId) {
+        updatedList = updatedList.map(item => {
+          if (item.id === editingGalleryId) {
+            return { ...item, name, category, tag, image, description, featured };
+          }
+          return item;
+        });
+      } else {
+        const newId = Date.now();
+        updatedList.push({ id: newId, name, category, tag, image, description, featured });
+      }
+
+      try {
+        const resp = await fetch(`${API_BASE}/api/gallery`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedList)
+        });
+
+        if (resp.ok) {
+          currentGalleryItems = updatedList;
+          renderGalleryTable();
+          closeGalleryModal();
+          alert(editingGalleryId ? '✅ 갤러리 상품이 수정되었습니다.' : '🎉 새 갤러리 상품이 추가되었습니다.');
+        } else {
+          alert('저장에 실패했습니다.');
+        }
+      } catch (err) {
+        alert('서버통신 오류');
+      }
+    }
+
+    async function deleteGalleryItem(id) {
+      if (!confirm('이 갤러리 상품을 삭제하시겠습니까?')) return;
+
+      const updatedList = currentGalleryItems.filter(item => item.id !== id);
+
+      try {
+        const resp = await fetch(`${API_BASE}/api/gallery`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedList)
+        });
+
+        if (resp.ok) {
+          currentGalleryItems = updatedList;
+          renderGalleryTable();
+          alert('🗑️ 갤러리 상품이 삭제되었습니다.');
+        } else {
+          alert('삭제에 실패했습니다.');
+        }
+      } catch (err) {
+        alert('서버통신 오류');
       }
     }
 
@@ -1333,26 +1705,79 @@
       document.body.removeChild(element);
     }
 
-    // Admin Authentication Check
-    function checkAdminAuth() {
-      const isAuth = sessionStorage.getItem('sam_admin_auth') === 'true';
-      const overlay = document.getElementById('loginOverlay');
-      if (isAuth) {
-        overlay.style.display = 'none';
-      } else {
-        overlay.style.display = 'flex';
+    // Pre-computed hash values for credentials (admin / !1asdfasdf)
+    const ADMIN_ID_HASHES = [
+      "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+      "fb_YWRtaW4=_92668751"
+    ];
+    const ADMIN_PW_HASHES = [
+      "1bc8bb1a8a352b95bdf23b29c86bd4298e325637a3813afd449f796b64af441c",
+      "fb_ITFhc2RmYXNkZg==_1363197288"
+    ];
+
+    async function hashString(str) {
+      if (window.crypto && window.crypto.subtle) {
+        try {
+          const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+          return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        } catch(e) {}
       }
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash |= 0;
+      }
+      return "fb_" + btoa(str) + "_" + Math.abs(hash);
     }
 
-    function handleAdminLogin(e) {
+    function isCredentialValid(idHash, pwHash) {
+      return ADMIN_ID_HASHES.includes(idHash) && ADMIN_PW_HASHES.includes(pwHash);
+    }
+
+    // Admin Authentication Check
+    async function checkAdminAuth() {
+      const overlay = document.getElementById('loginOverlay');
+
+      if (sessionStorage.getItem('sam_admin_auth') === 'true') {
+        overlay.style.display = 'none';
+        return;
+      }
+
+      const saved = localStorage.getItem('sam_admin_token');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (isCredentialValid(parsed.idHash, parsed.pwHash)) {
+            sessionStorage.setItem('sam_admin_auth', 'true');
+            overlay.style.display = 'none';
+            return;
+          }
+        } catch(e) {}
+        localStorage.removeItem('sam_admin_token');
+      }
+
+      overlay.style.display = 'flex';
+    }
+
+    async function handleAdminLogin(e) {
       e.preventDefault();
       const id = document.getElementById('login-id').value.trim();
       const pw = document.getElementById('login-pw').value.trim();
       const errorMsg = document.getElementById('loginErrorMsg');
+      const rememberCheck = document.getElementById('login-remember-check');
 
-      if (id === 'admin' && pw === '!1asdfasdf') {
+      const idHash = await hashString(id);
+      const pwHash = await hashString(pw);
+
+      if (isCredentialValid(idHash, pwHash)) {
         sessionStorage.setItem('sam_admin_auth', 'true');
         errorMsg.style.display = 'none';
+
+        if (rememberCheck && rememberCheck.checked) {
+          localStorage.setItem('sam_admin_token', JSON.stringify({ idHash, pwHash }));
+        }
+
         checkAdminAuth();
       } else {
         errorMsg.style.display = 'block';
@@ -1362,6 +1787,7 @@
     function handleAdminLogout() {
       if (confirm('관리자 시스템에서 로그아웃 하시겠습니까?')) {
         sessionStorage.removeItem('sam_admin_auth');
+        localStorage.removeItem('sam_admin_token');
         checkAdminAuth();
       }
     }
@@ -1369,6 +1795,7 @@
     // Initialize
     checkAdminAuth();
     initAdminPosts();
+    initAdminGallery();
     fetchAdminKbData();
   </script>
 </body>

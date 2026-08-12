@@ -2,6 +2,11 @@ name = "jewelry-sam-api"
 main = "worker/index.js"
 compatibility_date = "2024-01-01"
 
+routes = [
+  { pattern = "sam.lymin80.shop", custom_domain = true }
+]
+workers_dev = true
+
 [assets]
 directory = "."
 

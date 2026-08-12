@@ -704,12 +704,20 @@ img {
   align-items: center;
 }
 
+.nobreak {
+  display: inline-block;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
 .about-content {
-  padding-right: 2rem;
+  padding-right: 0.5rem;
 }
 
 .about-content .section-title {
   margin-bottom: 1.5rem;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .about-text {

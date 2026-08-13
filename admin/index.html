@@ -670,8 +670,8 @@
               <select id="gallery-category" class="form-input">
                 <option value="goldbar">🏆 골드바</option>
                 <option value="dolring">👶 순금 돌반지·돌선물</option>
-                <option value="character">🧸 캐릭터 골드바</option>
-                <option value="ring">💍 커플링</option>
+                <option value="character">🧸 캐릭터 순금제품</option>
+                <option value="ring">💍 반지</option>
                 <option value="earring">✨ 귀걸이</option>
                 <option value="necklace">📿 목걸이</option>
                 <option value="bracelet">💫 팔찌</option>
@@ -842,7 +842,7 @@
         <div class="seo-box">
           <div class="seo-title">🟢 2. 네이버 서치어드바이저 (Naver Search Advisor) 등록 방법</div>
           <div class="seo-desc">
-            1. <strong><a href="https://searchadvisor.naver.com/" target="_blank" style="color: #C9A96E;">네이버 서치어드바이저</a></strong> 로그인 후 [웹마스터 도구] ➡️ 사이트 등록에서 <code>https://jewelrysam.kr</code> (또는 도메인) 추가<br>
+            1. <strong><a href="https://searchadvisor.naver.com/" target="_blank" style="color: #C9A96E;">네이버 서치어드바이저</a></strong> 로그인 후 [웹마스터 도구] ➡️ 사이트 등록에서 <code>https://sam.lymin80.shop</code> 추가<br>
             2. 네이버에서 발급하는 소유확인 메타태그 (<code>&lt;meta name="naver-site-verification" content="..."&gt;</code>) 발급받기<br>
             3. 웹마스터 도구 ➡️ [요청] ➡️ [사이트맵 제출]에서 <code>sitemap.xml</code> 제출하기<br>
             4. [요청] ➡️ [RSS 제출]에서 <code>rss.xml</code> 제출하기
@@ -876,6 +876,7 @@
           toolbar: [
             [{ 'header': [1, 2, 3, false] }],
             ['bold', 'italic', 'underline', 'strike'],
+            [{ 'align': [] }],
             [{ 'list': 'ordered'}, { 'list': 'bullet' }],
             ['link', 'image'],
             ['clean']
@@ -1063,8 +1064,8 @@
       const catMap = {
         goldbar: "🏆 골드바",
         dolring: "👶 순금 돌반지",
-        character: "🧸 캐릭터 골드바",
-        ring: "💍 커플링",
+        character: "🧸 캐릭터 순금제품",
+        ring: "💍 반지",
         earring: "✨ 귀걸이",
         necklace: "📿 목걸이",
         bracelet: "💫 팔찌"
@@ -1665,10 +1666,10 @@
     // Download sitemap.xml
     function downloadSitemap() {
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-      xml += `  <url>\n    <loc>https://jewelrysam.kr/</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+      xml += `  <url>\n    <loc>https://sam.lymin80.shop/</loc>\n    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
       
       currentPosts.forEach(post => {
-        xml += `  <url>\n    <loc>https://jewelrysam.kr/#blog-post-${post.id}</loc>\n    <lastmod>${post.date}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+        xml += `  <url>\n    <loc>https://sam.lymin80.shop/?post=${post.id}</loc>\n    <lastmod>${post.date}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
       });
 
       xml += `</urlset>`;
@@ -1678,15 +1679,16 @@
 
     // Download rss.xml
     function downloadRss() {
-      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n`;
-      xml += `    <title>주얼리 샘 블로그 | Jewelry SAM</title>\n    <link>https://jewelrysam.kr</link>\n    <description>종로 프리미엄 주얼리 샘의 공식 블로그 - 골드바, 귀걸이, 목걸이, 팔찌, 커플링 소식</description>\n`;
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n  <channel>\n`;
+      xml += `    <title>주얼리 샘 공식 블로그 | Jewelry SAM</title>\n    <link>https://sam.lymin80.shop</link>\n    <description>종로 프리미엄 주얼리 샘의 공식 블로그 - 24K 순금 골드바, 캐릭터 순금제품, 귀걸이, 목걸이, 팔찌, 반지 소식 및 가이드</description>\n    <atom:link href="https://sam.lymin80.shop/rss.xml" rel="self" type="application/rss+xml"/>\n`;
 
       currentPosts.forEach(post => {
         xml += `    <item>\n`;
         xml += `      <title><![CDATA[${post.title}]]></title>\n`;
-        xml += `      <link>https://jewelrysam.kr/#blog-post-${post.id}</link>\n`;
+        xml += `      <link>https://sam.lymin80.shop/?post=${post.id}</link>\n`;
         xml += `      <description><![CDATA[${post.excerpt}]]></description>\n`;
         xml += `      <pubDate>${post.date}</pubDate>\n`;
+        xml += `      <guid>https://sam.lymin80.shop/?post=${post.id}</guid>\n`;
         xml += `    </item>\n`;
       });
 

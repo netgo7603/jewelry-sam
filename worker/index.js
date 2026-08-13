@@ -32,7 +32,7 @@ const DEFAULT_JEWELRY_SAM_KB = [
     id: 5,
     category: "골드바",
     keywords: ["골드바", "중량", "돈", "g", "100g", "1kg", "돈수"],
-    answer: "🏆 **24K 정품 순금 골드바 안내**\n국가 공인 감정원 정품 인증서가 동봉된 순도 99.9% 골드바를 미니 1g, 3.75g(1돈)부터 10g, 37.5g(10돈), 100g, 1kg 등 다양하게 제공하고 있습니다."
+    answer: "🏆 **24K 정품 순금 골드바 안내**\n국가 공인 감정원 정품 인증서가 동봉된 순도 999.9 골드바를 미니 1g, 3.75g(1돈)부터 10g, 37.5g(10돈), 100g, 1kg 등 다양하게 제공하고 있습니다."
   },
   {
     id: 6,
@@ -68,7 +68,7 @@ const DEFAULT_JEWELRY_SAM_KB = [
     id: 11,
     category: "돌반지/돌선물",
     keywords: ["돌반지", "돌선물", "첫돌", "백일반지", "돌팔찌", "반돈", "한돈", "1돈", "아기반지"],
-    answer: "👶 **순금 돌반지 & 돌선물 안내**\n• **종류**: 24K 순금 돌반지 (반돈 1.875g, 1돈 3.75g), 순금 돌팔찌, 캐릭터 돌반지, 왕관 돌반지, 이니셜 각인 돌반지\n• **보증**: 국가 공인 감정원 정품 24K 순도 99.9% 보증서 동봉\n• **혜택**: 예쁜 고급 케이스 무료 선물 포장 & 이니셜 각인 무료 서비스"
+    answer: "👶 **순금 돌반지 & 돌선물 안내**\n• **종류**: 24K 순금 돌반지 (반돈 1.875g, 1돈 3.75g), 순금 돌팔찌, 캐릭터 돌반지, 왕관 돌반지, 이니셜 각인 돌반지\n• **보증**: 국가 공인 감정원 정품 24K 순도 999.9 보증서 동봉\n• **혜택**: 예쁜 고급 케이스 무료 선물 포장 & 이니셜 각인 무료 서비스"
   },
   {
     id: 12,
@@ -85,21 +85,21 @@ const DEFAULT_JEWELRY_SAM_GALLERY = [
     category: "goldbar",
     tag: "Best Seller",
     image: "images/gold_bar.png",
-    description: "순도 99.9% 프리미엄 골드바. 선물용·투자용 최적의 순금 제품",
+    description: "순도 999.9 프리미엄 골드바. 선물용·투자용 최적의 순금 제품",
     featured: true
   },
   {
     id: 2,
-    name: "캐릭터 골드바",
+    name: "캐릭터 순금제품",
     category: "character",
     tag: "인기",
     image: "images/character_gold_bar.png",
-    description: "귀여운 캐릭터 디자인의 미니 골드바",
+    description: "귀여운 캐릭터 디자인의 미니 순금제품",
     featured: false
   },
   {
     id: 3,
-    name: "커플링 세트",
+    name: "반지",
     category: "ring",
     tag: "추천",
     image: "images/couple_ring_set.png",

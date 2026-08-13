@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>주얼리 샘 공식 블로그 | Jewelry SAM</title>
+    <link>https://sam.lymin80.shop</link>
+    <description>종로 프리미엄 주얼리 샘의 공식 블로그 - 24K 순금 골드바, 캐릭터 순금제품, 귀걸이, 목걸이, 팔찌, 반지 소식 및 가이드</description>
+    <language>ko-KR</language>
+    <pubDate>Thu, 13 Aug 2026 06:45:00 GMT</pubDate>
+    <lastBuildDate>Thu, 13 Aug 2026 06:45:00 GMT</lastBuildDate>
+    <atom:link href="https://sam.lymin80.shop/rss.xml" rel="self" type="application/rss+xml"/>
+    
+    <item>
+      <title>금의 역원(起源) — 인류와 함께한 영원의 금속</title>
+      <link>https://sam.lymin80.shop/?post=9001</link>
+      <description><![CDATA[고대 이집트부터 현대 금융까지, 금이 인류 문명의 중심에 서 온 이유를 알아봅니다.]]></description>
+      <category>골드바 투자</category>
+      <pubDate>Mon, 10 Aug 2026 00:00:00 GMT</pubDate>
+      <guid>https://sam.lymin80.shop/?post=9001</guid>
+    </item>
+    <item>
+      <title>보석의 뜻과 역사 — 탄생석별 의미와 선택 가이드</title>
+      <link>https://sam.lymin80.shop/?post=9002</link>
+      <description><![CDATA[루비, 사파이어, 에메랄드, 다이아몬드... 각 보석이 품고 있는 의미와 역사를 소개합니다.]]></description>
+      <category>주얼리 팁</category>
+      <pubDate>Sun, 09 Aug 2026 00:00:00 GMT</pubDate>
+      <guid>https://sam.lymin80.shop/?post=9002</guid>
+    </item>
+    <item>
+      <title>순금 골드바 투자 가이드 — 현명한 금 투자의 모든 것</title>
+      <link>https://sam.lymin80.shop/?post=9003</link>
+      <description><![CDATA[금 투자를 시작하려는 분들을 위한 실전 가이드. 중량별 선택법, 시세 확인법, 보관법까지.]]></description>
+      <category>골드바 투자</category>
+      <pubDate>Sat, 08 Aug 2026 00:00:00 GMT</pubDate>
+      <guid>https://sam.lymin80.shop/?post=9003</guid>
+    </item>
+    <item>
+      <title>주얼리 관리법 — 금·은 제품을 오래 빛나게 유지하는 비법</title>
+      <link>https://sam.lymin80.shop/?post=9004</link>
+      <description><![CDATA[소중한 주얼리를 처음처럼 빛나게 관리하는 방법. 소재별 보관법과 세척법을 알려드립니다.]]></description>
+      <category>주얼리 팁</category>
+      <pubDate>Fri, 07 Aug 2026 00:00:00 GMT</pubDate>
+      <guid>https://sam.lymin80.shop/?post=9004</guid>
+    </item>
+    <item>
+      <title>커플링 선택 완벽 가이드 — 영원을 약속하는 반지</title>
+      <link>https://sam.lymin80.shop/?post=9005</link>
+      <description><![CDATA[사랑하는 사람과 함께할 커플링, 소재·디자인·사이즈 선택부터 이니셜 각인까지.]]></description>
+      <category>반지 가이드</category>
+      <pubDate>Thu, 06 Aug 2026 00:00:00 GMT</pubDate>
+      <guid>https://sam.lymin80.shop/?post=9005</guid>
+    </item>
+    <item>
+      <title>금 시세 읽는 법 — 오늘의 금값, 어떻게 확인할까?</title>
+      <link>https://sam.lymin80.shop/?post=9006</link>
+      <description><![CDATA[금 시세는 어떻게 결정되고, 어디서 확인할 수 있을까? 초보자를 위한 금값 완전 정복.]]></description>
+      <category>골드바 투자</category>
+      <pubDate>Wed, 05 Aug 2026 00:00:00 GMT</pubDate>
+      <guid>https://sam.lymin80.shop/?post=9006</guid>
+    </item>
+  </channel>
+</rss>

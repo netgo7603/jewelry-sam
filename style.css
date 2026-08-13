@@ -1845,6 +1845,57 @@ img {
   line-height: 1.8;
 }
 
+.blog-modal-body p {
+  margin-bottom: 1rem;
+}
+
+.blog-modal-body h1,
+.blog-modal-body h2,
+.blog-modal-body h3,
+.blog-modal-body h4,
+.blog-modal-body h5,
+.blog-modal-body h6 {
+  color: var(--color-text-main);
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-serif);
+}
+
+.blog-modal-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm, 8px);
+  margin: 1rem auto;
+  display: block;
+}
+
+.blog-modal-body ul,
+.blog-modal-body ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+/* Quill Editor Alignment & Formatting Classes Support */
+.blog-modal-body .ql-align-center,
+.ql-align-center {
+  text-align: center !important;
+}
+
+.blog-modal-body .ql-align-right,
+.ql-align-right {
+  text-align: right !important;
+}
+
+.blog-modal-body .ql-align-justify,
+.ql-align-justify {
+  text-align: justify !important;
+}
+
+.blog-modal-body .ql-align-left,
+.ql-align-left {
+  text-align: left !important;
+}
+
 @media (max-width: 1024px) {
   .blog-grid {
     grid-template-columns: repeat(2, 1fr);

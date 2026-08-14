@@ -132,15 +132,6 @@ const DEFAULT_JEWELRY_SAM_GALLERY = [
     image: "images/bracelet.png",
     description: "손목을 우아하게 감싸는 골드 팔찌",
     featured: false
-  },
-  {
-    id: 7,
-    name: "순금 돌반지 컬렉션",
-    category: "dolring",
-    tag: "첫돌 선물",
-    image: "images/dolring.png",
-    description: "첫돌·백일 기념 24K 순금 돌반지 & 돌팔찌. 반돈·1돈 정품 보증",
-    featured: true
   }
 ];
 

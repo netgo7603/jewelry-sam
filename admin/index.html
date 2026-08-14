@@ -870,16 +870,67 @@
     document.addEventListener('DOMContentLoaded', () => {
       quillEditor = new Quill('#editor-container', {
         theme: 'snow',
-        placeholder: '블로그 본문 내용을 여기에 자유롭게 작성하세요. (워드/한글처럼 굵게, 제목 크기, 글머리 기호, 링크, 이미지 삽입 등이 지원됩니다)',
+        placeholder: '블로그 본문 내용을 여기에 자유롭게 작성하세요. (워드/한글처럼 굵게, 제목 크기, 정렬, 글머리 기호, 링크, 이미지 삽입 등이 지원됩니다)',
         modules: {
-          toolbar: [
-            [{ 'header': [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'align': [] }],
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-            ['link', 'image'],
-            ['clean']
-          ]
+          toolbar: {
+            container: [
+              [{ 'header': [1, 2, 3, false] }],
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ 'align': [] }],
+              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+              ['link', 'image'],
+              ['clean']
+            ],
+            handlers: {
+              image: function() {
+                const input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+                input.click();
+                input.onchange = async () => {
+                  const file = input.files[0];
+                  if (!file) return;
+                  const range = quillEditor.getSelection(true) || { index: quillEditor.getLength(), length: 0 };
+                  const formData = new FormData();
+                  formData.append('file', file);
+                  try {
+                    const resp = await fetch(`${API_BASE}/api/upload`, {
+                      method: 'POST',
+                      body: formData
+                    });
+                    if (resp.ok) {
+                      const data = await resp.json();
+                      if (data.success && data.url) {
+                        quillEditor.insertEmbed(range.index, 'image', data.url);
+                        quillEditor.setSelection(range.index + 1);
+                        return;
+                      }
+                    }
+                  } catch (e) {
+                    console.log('Quill Image R2 Upload Error', e);
+                  }
+                  // Fallback to DataURL
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    quillEditor.insertEmbed(range.index, 'image', e.target.result);
+                    quillEditor.setSelection(range.index + 1);
+                  };
+                  reader.readAsDataURL(file);
+                };
+              }
+            }
+          }
+        }
+      });
+
+      // Enable clicking on images inside editor to auto-select for toolbar alignment
+      quillEditor.root.addEventListener('click', (e) => {
+        if (e.target && e.target.tagName === 'IMG') {
+          const blot = Quill.find(e.target);
+          if (blot) {
+            const index = quillEditor.getIndex(blot);
+            quillEditor.setSelection(index, 1);
+          }
         }
       });
     });

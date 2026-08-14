@@ -1861,12 +1861,14 @@ img {
   font-family: var(--font-serif);
 }
 
-.blog-modal-body img {
+.blog-modal-body img,
+.ql-editor img {
   max-width: 100%;
   height: auto;
   border-radius: var(--radius-sm, 8px);
-  margin: 1rem auto;
-  display: block;
+  margin: 0.5rem auto;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .blog-modal-body ul,
@@ -1875,25 +1877,60 @@ img {
   padding-left: 1.5rem;
 }
 
-/* Quill Editor Alignment & Formatting Classes Support */
+/* Quill Editor Alignment & Image Alignment Support */
 .blog-modal-body .ql-align-center,
-.ql-align-center {
+.ql-editor .ql-align-center,
+.ql-align-center,
+p.ql-align-center {
   text-align: center !important;
 }
 
 .blog-modal-body .ql-align-right,
-.ql-align-right {
+.ql-editor .ql-align-right,
+.ql-align-right,
+p.ql-align-right {
   text-align: right !important;
 }
 
 .blog-modal-body .ql-align-justify,
-.ql-align-justify {
+.ql-editor .ql-align-justify,
+.ql-align-justify,
+p.ql-align-justify {
   text-align: justify !important;
 }
 
 .blog-modal-body .ql-align-left,
-.ql-align-left {
+.ql-editor .ql-align-left,
+.ql-align-left,
+p.ql-align-left {
   text-align: left !important;
+}
+
+.blog-modal-body .ql-align-center img,
+.ql-editor .ql-align-center img,
+img.ql-align-center,
+p.ql-align-center img {
+  display: inline-block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.blog-modal-body .ql-align-right img,
+.ql-editor .ql-align-right img,
+img.ql-align-right,
+p.ql-align-right img {
+  display: inline-block !important;
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+.blog-modal-body .ql-align-left img,
+.ql-editor .ql-align-left img,
+img.ql-align-left,
+p.ql-align-left img {
+  display: inline-block !important;
+  margin-left: 0 !important;
+  margin-right: auto !important;
 }
 
 @media (max-width: 1024px) {

@@ -3,14 +3,17 @@ Allow: /
 Disallow: /admin.html
 Disallow: /admin/
 
-# Google, Naver, Bing Crawlers Welcome
-User-agent: Googlebot
-Allow: /
-
+# Naver Yeti Crawler
 User-agent: Yeti
 Allow: /
 
+# Googlebot
+User-agent: Googlebot
+Allow: /
+
+# Bingbot
 User-agent: bingbot
 Allow: /
 
 Sitemap: https://sam.lymin80.shop/sitemap.xml
+

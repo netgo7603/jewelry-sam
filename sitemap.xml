@@ -1,47 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <!-- Main Landing Page -->
   <url>
     <loc>https://sam.lymin80.shop/</loc>
-    <lastmod>2026-08-18</lastmod>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://sam.lymin80.shop/images/hero.png</image:loc>
+      <image:title>주얼리 샘 종로 골드바 프리미엄 컬렉션</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://sam.lymin80.shop/images/gold_bar.png</image:loc>
+      <image:title>순금 골드바 24K</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://sam.lymin80.shop/images/character_gold_bar.png</image:loc>
+      <image:title>캐릭터 순금제품</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://sam.lymin80.shop/images/way_store_inside.jpg</image:loc>
+      <image:title>주얼리 샘 종로 매장 전경</image:title>
+    </image:image>
   </url>
   <!-- Blog Post Deep Links -->
   <url>
     <loc>https://sam.lymin80.shop/?post=9001</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://sam.lymin80.shop/images/blog_gold_history.png</image:loc>
+      <image:title>금의 역원(起源) — 인류와 함께한 영원의 금속</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://sam.lymin80.shop/?post=9002</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://sam.lymin80.shop/images/blog_gemstone_meaning.png</image:loc>
+      <image:title>보석의 뜻과 역사 — 탄생석별 의미와 선택 가이드</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://sam.lymin80.shop/?post=9003</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://sam.lymin80.shop/images/blog_gold_investment.png</image:loc>
+      <image:title>순금 골드바 투자 가이드 — 현명한 금 투자의 모든 것</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://sam.lymin80.shop/?post=9004</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://sam.lymin80.shop/images/blog_jewelry_care.png</image:loc>
+      <image:title>주얼리 관리법 — 금·은 제품을 오래 빛나게 유지하는 비법</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://sam.lymin80.shop/?post=9005</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://sam.lymin80.shop/images/blog_couple_ring_guide.png</image:loc>
+      <image:title>커플링 선택 완벽 가이드 — 영원을 약속하는 반지</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://sam.lymin80.shop/?post=9006</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 </urlset>

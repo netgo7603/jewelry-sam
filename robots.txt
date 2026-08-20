@@ -2,18 +2,38 @@ User-agent: *
 Allow: /
 Disallow: /admin.html
 Disallow: /admin/
+Disallow: /api/live-chat/
+Disallow: /api/telegram-config
+
+# Googlebot & Googlebot-Image
+User-agent: Googlebot
+Allow: /
+Disallow: /admin.html
+Disallow: /admin/
+
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /r2/
+Allow: /
 
 # Naver Yeti Crawler
 User-agent: Yeti
 Allow: /
-
-# Googlebot
-User-agent: Googlebot
-Allow: /
+Disallow: /admin.html
+Disallow: /admin/
 
 # Bingbot
 User-agent: bingbot
 Allow: /
+Disallow: /admin.html
+Disallow: /admin/
+
+# Daum / Daumoa
+User-agent: Daumoa
+Allow: /
+Disallow: /admin.html
+Disallow: /admin/
 
 Sitemap: https://sam.lymin80.shop/sitemap.xml
+
 
